@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/spf13/cobra"
 
@@ -16,7 +18,12 @@ func NewServeCommand(ctr *app.Container) *cobra.Command {
 		RunE: func(_ *cobra.Command, _ []string) error {
 			fmt.Println("Running the kube-apiserver-proxy server...")
 
-			return ctr.Echo().Start(":8080")
+			http.Handle("/", ctr.GQLPlaygroundHandler())
+			http.Handle("/query", ctr.GQLServerHandler())
+
+			log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
+
+			return http.ListenAndServe(":8080", nil)
 		},
 	}
 
