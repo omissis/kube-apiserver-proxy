@@ -1,18 +1,44 @@
-config.define_string("workdir")
-config.define_string_list("projects")
 config.define_string_list("services")
 
 parsed_config = config.parse()
 
-projects = parsed_config.get("projects", [])
-services = parsed_config.get("services", [])
-
 load_dynamic("./configs/tiltfiles/setup.tiltfile")
 
-path = parsed_config.get("workdir")
-
-for project in projects:
-  load_dynamic("%s/%s/Tiltfile" % (path, project))
-
-for service in services:
+for service in parsed_config.get("services", []):
   load_dynamic("./configs/tiltfiles/%s.tiltfile" % (service))
+
+load('ext://restart_process', 'docker_build_with_restart')
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+
+docker_build_with_restart(
+  "kube-apiserver-proxy",
+  ".",
+  target="dev",
+  live_update=[
+    sync("./internal", "/app/internal"),
+    sync("./go.mod", "/app/go.mod"),
+    sync("./go.sum", "/app/go.sum"),
+    sync("./gqlgen.yml", "/app/gqlgen.yml"),
+    sync("./main.go", "/app/main.go"),
+  ],
+  build_args={},
+  entrypoint=["go", "run", "main.go", "serve"],
+)
+
+helm_resource(
+  'kube-apiserver-proxy',
+  './deployments/helm/kube-apiserver-proxy',
+  release_name='kube-apiserver-proxy',
+  namespace='default',
+  flags=['--values', './deployments/values.dev.yaml'],
+  image_deps=['kube-apiserver-proxy'],
+  image_keys=[('image.repository', 'image.tag')],
+)
+
+k8s_resource(
+  workload="kube-apiserver-proxy",
+  links=[
+    link("https://api.kube-apiserver-proxy.dev/", "kube-apiserver-proxy"),
+  ],
+  labels="projects"
+)

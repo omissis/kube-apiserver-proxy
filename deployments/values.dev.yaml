@@ -1,0 +1,12 @@
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  tls:
+    - secretName: wildcard.kube-apiserver-proxy.dev-tls
+      hosts:
+        - api.kube-apiserver-proxy.dev
+service:
+  type: ClusterIP
+  port: 8080

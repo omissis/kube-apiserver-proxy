@@ -1,6 +1,4 @@
 {
-  "workdir": "/path/to/your/workdir",
-  "projects": [],
   "services": [
     "ingress-nginx",
     "metrics-server"
