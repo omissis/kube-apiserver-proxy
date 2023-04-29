@@ -1,0 +1,26 @@
+{
+  "name": "kube-apiserver-proxy",
+  "version": "0.1.0",
+  "description": "A proxy for the Kubernetes API server.",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omissis/kube-apiserver-proxy.git"
+  },
+  "keywords": [
+    "kubernetes"
+  ],
+  "author": "Claudio Beatrice <claudi0.beatric3@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/omissis/kube-apiserver-proxy/issues"
+  },
+  "homepage": "https://github.com/omissis/kube-apiserver-proxy#readme",
+  "devDependencies": {
+    "openapi-to-graphql-cli": "^3.0.5"
+  },
+  "peerDependencies": {
+    "graphql": "^15.3.0 || ^15.7.2 || ^16.0.0"
+  }
+}
