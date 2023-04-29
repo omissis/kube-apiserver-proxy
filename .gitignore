@@ -1,0 +1,14 @@
+.envrc
+.helm/
+.idea/
+.netrc
+.vscode/
+configs/certs
+!configs/certs/.gitkeep
+configs/kubeconfig
+configs/kubernetes-manifests/*-tls.yaml
+packages/
+repositories/
+tilt_config.json
+tilt_modules
+.kubeconfig

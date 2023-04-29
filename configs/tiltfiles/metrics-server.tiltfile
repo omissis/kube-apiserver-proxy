@@ -1,0 +1,17 @@
+docker_build('dev-metrics-server', '.', dockerfile='../dockerfiles/Dockerfile.metrics-server')
+
+k8s_yaml("../kubernetes-manifests/metrics-server.yaml")
+
+k8s_resource(
+  workload="metrics-server",
+  objects=[
+    "metrics-server:serviceaccount",
+    "metrics-server-auth-reader:rolebinding",
+    "v1beta1.metrics.k8s.io:apiservice",
+    "system\\:metrics-server:clusterrolebinding",
+    "system\\:metrics-server:clusterrole",
+    "system\\:aggregated-metrics-reader:clusterrole",
+    "metrics-server\\:system\\:auth-delegator:clusterrolebinding",
+  ],
+  labels="services"
+)

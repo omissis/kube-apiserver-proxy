@@ -1,0 +1,13 @@
+---
+controller:
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+  admissionWebhooks:
+    enabled: false
+  image:
+    registry: docker.io/library
+    image: dev-ingress-nginx-controller
+    tag: 1.0.0

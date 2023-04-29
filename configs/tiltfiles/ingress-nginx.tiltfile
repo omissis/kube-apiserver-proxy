@@ -1,0 +1,39 @@
+# nginx (https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/Chart.yaml)
+
+load("ext://helm_remote", "helm_remote")
+
+docker_build(
+  'dev-ingress-nginx-controller',
+  '.',
+  dockerfile='../dockerfiles/Dockerfile.ingress-nginx-controller',
+  extra_tag=['ingress-nginx-controller:1.0.0']
+)
+
+helm_remote(
+  "ingress-nginx",
+  repo_name="ingress-nginx",
+  repo_url="https://kubernetes.github.io/ingress-nginx",
+  version="4.6.0",
+  namespace="default",
+  release_name="ingress-nginx",
+  values="../helm-values/ingress-nginx.yaml",
+)
+
+k8s_resource(
+  workload="ingress-nginx-controller",
+  links=[
+    link("http://kube-apiserver-proxy.dev", "http (80)"),
+    link("https://kube-apiserver-proxy.dev", "https (443)"),
+  ],
+  objects=[
+    "ingress-nginx-controller:configmap",
+    "ingress-nginx:clusterrole",
+    "ingress-nginx:clusterrolebinding",
+    "ingress-nginx:role",
+    "ingress-nginx:rolebinding",
+    "ingress-nginx:serviceaccount",
+    "nginx:ingressclass",
+  ],
+  new_name="ingress-nginx",
+  labels="services"
+)
