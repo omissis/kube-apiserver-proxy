@@ -4,8 +4,8 @@
 PROJECT_NAME="kube-apiserver-proxy"
 PROJECT_DOMAIN="kube-apiserver-proxy.dev"
 WORKING_DIR=$(pwd)
-CLUSTER_VERSION="${1}"
-FORCE="${2}"
+CLUSTER_VERSION=$1
+FORCE=$2
 
 # Utilities
 # This function will create the ctlptl registry (which is local registry used by Tilt) and the kind cluster.
@@ -40,12 +40,12 @@ function setup_certs {
     echo "Creating TLS certificates.."
 
     (cd "${CERTS_DIR}" && mkcert "*.${PROJECT_DOMAIN}" && mkcert "${PROJECT_DOMAIN}" && mkcert -install) &&
-      kubectl create secret tls wildcard.${PROJECT_DOMAIN}-tls \
+      kubectl create secret tls "wildcard.${PROJECT_DOMAIN}-tls" \
         --cert="${CERTS_DIR}/_wildcard.${PROJECT_DOMAIN}.pem" \
         --key="${CERTS_DIR}/_wildcard.${PROJECT_DOMAIN}-key.pem" \
         -o yaml --dry-run=client > "${MANIFESTS_DIR}/wildcard.${PROJECT_DOMAIN}-tls.yaml"
 
-    kubectl create secret tls ${PROJECT_DOMAIN}-tls \
+    kubectl create secret tls "${PROJECT_DOMAIN}-tls" \
       --cert="${CERTS_DIR}/${PROJECT_DOMAIN}.pem" \
       --key="${CERTS_DIR}/${PROJECT_DOMAIN}-key.pem" \
       -o yaml --dry-run=client > "${MANIFESTS_DIR}/${PROJECT_DOMAIN}-tls.yaml"
@@ -66,8 +66,8 @@ setup_certs "${WORKING_DIR}/configs/kubernetes-manifests" "${WORKING_DIR}/config
 
 # Exec
 
-if [[ -n "$(docker ps -q -a -f name=${PROJECT_NAME}-kind-registry || true)" ]] &&
-  [[ -n "$(docker ps -q -a -f name=${PROJECT_NAME}-kind-control-plane || true)" ]]; then
+if [[ -n $(docker ps -q -a -f name="${PROJECT_NAME}-kind-registry" || true) ]] &&
+  [[ -n $(docker ps -q -a -f name="${PROJECT_NAME}-kind-control-plane" || true) ]]; then
   start
 else
   create "${CLUSTER_VERSION}" "${WORKING_DIR}/configs/kubernetes-manifests"

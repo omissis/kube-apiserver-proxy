@@ -142,6 +142,79 @@ format-json:
 format-json-docker: docker-tools
 	$(call run-script-docker,${_DOCKER_TOOLS_IMAGE},format-json)
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Golang Targets
+# ----------------------------------------------------------------------------------------------------------------------
+
+.PHONY: tools-go tools-brew
+
+tools-go:
+	@scripts/tools-golang.sh
+
+tools-brew:
+	@scripts/tools-brew.sh
+
+.PHONY: lint-go lint-go-docker
+
+lint-go:
+	@scripts/lint-golang.sh
+
+lint-go-docker:
+	$(call run-script-docker,${_DOCKER_GOLANGCI_LINT_IMAGE},lint-golang)
+
+.PHONY: format-go format-go-docker
+
+format-go:
+	@scripts/format-golang.sh
+
+format-go-docker: build-golang-docker-image
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE_TOOLS},format-golang)
+
+.PHONY: upgrade-deps-check-go upgrade-deps-check-go-docker upgrade-deps-go upgrade-deps-go-docker
+
+upgrade-deps-check-go:
+	@scripts/upgrade-deps-check-golang.sh
+
+upgrade-deps-check-go-docker:
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE},upgrade-deps-check-golang)
+
+upgrade-deps-go:
+	@scripts/upgrade-deps-golang.sh
+
+upgrade-deps-go-docker:
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE},upgrade-deps-golang)
+
+.PHONY: test-unit test-unit-docker test-e2e test-e2e-docker test-all test-all-docker show-coverage-go
+
+test-unit:
+	@scripts/test-unit.sh
+
+test-unit-docker:
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE},test-unit)
+
+test-e2e:
+	@scripts/test-e2e.sh
+
+test-e2e-docker: build-golang-docker-image
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE_TOOLS},test-e2e)
+
+test-all:
+	@scripts/test-all.sh
+
+test-all-docker: build-golang-docker-image
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE_TOOLS},test-all)
+
+show-coverage-go:
+	@scripts/show-coverage-golang.sh
+
+.PHONY: build release
+
+build:
+	@scripts/build.sh
+
+release:
+	@scripts/release.sh
+
 # -------------------------------------------------------------------------------------------------
 # Development Targets
 # -------------------------------------------------------------------------------------------------
