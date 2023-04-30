@@ -5,7 +5,7 @@ This project is a proxy for the Kubernetes API server.
 It is designed to be used in a Kubernetes cluster to allow access to parts of the API server from outside the cluster
 in a convenient manner for other projects to use.
 
-## Development
+## Getting started
 
 In order to start developing, it is recommended to install [asdf][asdf] and [direnv][direnv].
 Once those two tools are in place, you should copy the `.envrc.dist` file to `.envrc` and the `tilt_config.json.dist`
@@ -23,17 +23,37 @@ In a nutshell:
 cp .envrc.dist .envrc
 cp tilt_config.json.dist tilt_config.json
 
-# Step 2: Install asdf and direnv
+# Step 2: install asdf and direnv using your favorite package manager
 
-# Step 3: Install the dependencies
+# Step 3: install the asdf dependencies
 asdf install
 
-# Step 4: Load the dependencies
+# Step 4: load the asdf dependencies
 direnv allow
 
-# Step 5: start the development environment
+# Step 5: install the brew dependencies (MacOS only, for other OSes, please install the dependencies manually)
+make tools-brew
+
+# Step 6: install the golang dependencies
+make tools-go
+
+# Step 7: install npm dependencies
+npm install
+
+# Step 8: start the development environment
 make dev-up CLUSTER_VERSION=1.27.1
+
+# Step 9: stop the development environment
+make dev-down
 ```
+
+## Development
+
+The project offers a `Makefile` containing most of the commands you'll need for development.
+In there, you'll find targets for running several linters and formatters, for building and releasing the project,
+for starting and stopping the dev environment, for running tests and for generating the code and the graphql schemas.
+Feel free to explore it to find out more, and don't forget to have a look at the `scripts/` folder
+for more details on the implementation.
 
 [asdf]: https://asdf-vm.com/
 [direnv]: https://direnv.net/
