@@ -1,6 +1,7 @@
 # Kubernetes Api Server Proxy
 
 > THIS PROJECT IS IN DEVELOPMENT AND IT IS NOT READY FOR PRODUCTION USE
+>
 > DO NOT CONSIDER IT UNLESS YOU ARE WILLING TO CONTRIBUTE TO IT
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/omissis/kube-apiserver-proxy?style=flat)](https://github.com/omissis/kube-apiserver-proxy/releases/latest)
