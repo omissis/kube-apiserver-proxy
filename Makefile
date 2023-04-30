@@ -143,6 +143,19 @@ format-json-docker: docker-tools
 	$(call run-script-docker,${_DOCKER_TOOLS_IMAGE},format-json)
 
 # ----------------------------------------------------------------------------------------------------------------------
+# GraphQL Targets
+# ----------------------------------------------------------------------------------------------------------------------
+
+.PHONY: generate-graphql generate-graphql-docker
+
+generate-graphql:
+	@scripts/generate-graphql.sh
+
+# TODO: implement docker image for this target
+# generate-graphql-docker:
+# 	$(call run-script-docker,${_DOCKER_GRAPHQL_IMAGE},generate-graphql)
+
+# ----------------------------------------------------------------------------------------------------------------------
 # Golang Targets
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -183,6 +196,14 @@ upgrade-deps-go:
 
 upgrade-deps-go-docker:
 	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE},upgrade-deps-golang)
+
+.PHONY: generate-go generate-go-docker
+
+generate-go:
+	@scripts/generate-golang.sh
+
+generate-go-docker:
+	$(call run-script-docker,${_DOCKER_GOLANG_IMAGE},generate-go)
 
 .PHONY: test-unit test-unit-docker test-e2e test-e2e-docker test-all test-all-docker show-coverage-go
 

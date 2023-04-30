@@ -40,5 +40,6 @@ k8s_resource(
   links=[
     link("https://api.kube-apiserver-proxy.dev/", "kube-apiserver-proxy"),
   ],
-  labels="projects"
+  labels="projects",
+  trigger_mode=TRIGGER_MODE_AUTO
 )
