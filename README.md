@@ -74,7 +74,7 @@ for starting and stopping the dev environment, for running tests and for generat
 Feel free to explore it to find out more, and don't forget to have a look at the `scripts/` folder
 for more details on the implementation.
 
-### Architecture
+### Architecture
 
 For more information on the architectural decisions that have been made, refer to the [docs/arch/](./docs/arch/) folder.
 
