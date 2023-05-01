@@ -22,7 +22,9 @@ This project is a proxy for the Kubernetes API server.
 It is designed to be used in a Kubernetes cluster to allow access to parts of the API server from outside the cluster
 in a convenient manner for other projects to use.
 
-## Getting started
+## Contributing
+
+### Setting up the environment
 
 In order to start developing, it is recommended to install [asdf][asdf] and [direnv][direnv].
 Once those two tools are in place, you should copy the `.envrc.dist` file to `.envrc` and the `tilt_config.json.dist`
@@ -64,13 +66,15 @@ make dev-up CLUSTER_VERSION=1.27.1
 make dev-down
 ```
 
-## Development
+### Development
 
 The project offers a `Makefile` containing most of the commands you'll need for development.
 In there, you'll find targets for running several linters and formatters, for building and releasing the project,
 for starting and stopping the dev environment, for running tests and for generating the code and the graphql schemas.
 Feel free to explore it to find out more, and don't forget to have a look at the `scripts/` folder
 for more details on the implementation.
+
+### Architecture
 
 For more information on the architectural decisions that have been made, refer to the [docs/arch/](./docs/arch/) folder.
 
