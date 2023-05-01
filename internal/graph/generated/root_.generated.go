@@ -44,6 +44,7 @@ type ResolverRoot interface {
 	EmptyDir() EmptyDirResolver
 	Endpoints() EndpointsResolver
 	EndpointsList() EndpointsListResolver
+	Ephemeral() EphemeralResolver
 	Event() EventResolver
 	EventList() EventListResolver
 	FlexVolume() FlexVolumeResolver
@@ -84,6 +85,7 @@ type ResolverRoot interface {
 	ResourceQuotaList() ResourceQuotaListResolver
 	ScaleIO() ScaleIOResolver
 	ScopeSelector() ScopeSelectorResolver
+	SeccompProfile() SeccompProfileResolver
 	Secret() SecretResolver
 	SecretList() SecretListResolver
 	SecurityContext() SecurityContextResolver

@@ -6,74 +6,74 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/omissis/kube-apiserver-proxy/internal/graph/generated"
 	"github.com/omissis/kube-apiserver-proxy/internal/graph/model"
 	"k8s.io/api/core/v1"
-	"k8s.io/api/extensions/v1beta1"
 	v1beta11 "k8s.io/api/policy/v1beta1"
 	v11 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // CachingMode is the resolver for the cachingMode field.
-func (r *azureDiskResolver) CachingMode(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *azureDiskResolver) CachingMode(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: CachingMode - cachingMode")
 
 	return nil, nil
 }
 
 // DiskName is the resolver for the diskName field.
-func (r *azureDiskResolver) DiskName(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *azureDiskResolver) DiskName(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: DiskName - diskName")
 
 	return "", nil
 }
 
 // DiskURI is the resolver for the diskURI field.
-func (r *azureDiskResolver) DiskURI(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *azureDiskResolver) DiskURI(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: DiskURI - diskURI")
 
 	return "", nil
 }
 
 // FsType is the resolver for the fsType field.
-func (r *azureDiskResolver) FsType(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *azureDiskResolver) FsType(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: FsType - fsType")
 
 	return nil, nil
 }
 
 // Kind is the resolver for the kind field.
-func (r *azureDiskResolver) Kind(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *azureDiskResolver) Kind(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Kind - kind")
 
 	return nil, nil
 }
 
 // ReadOnly is the resolver for the readOnly field.
-func (r *azureDiskResolver) ReadOnly(ctx context.Context, obj *v1beta1.FSType) (*bool, error) {
+func (r *azureDiskResolver) ReadOnly(ctx context.Context, obj *v1beta11.FSType) (*bool, error) {
 	log.Printf("not implemented: ReadOnly - readOnly")
 
 	return nil, nil
 }
 
 // ReadOnly is the resolver for the readOnly field.
-func (r *azureFileResolver) ReadOnly(ctx context.Context, obj *v1beta1.FSType) (*bool, error) {
+func (r *azureFileResolver) ReadOnly(ctx context.Context, obj *v1beta11.FSType) (*bool, error) {
 	log.Printf("not implemented: ReadOnly - readOnly")
 
 	return nil, nil
 }
 
 // SecretName is the resolver for the secretName field.
-func (r *azureFileResolver) SecretName(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *azureFileResolver) SecretName(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: SecretName - secretName")
 
 	return "", nil
 }
 
 // ShareName is the resolver for the shareName field.
-func (r *azureFileResolver) ShareName(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *azureFileResolver) ShareName(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: ShareName - shareName")
 
 	return "", nil
@@ -108,28 +108,28 @@ func (r *capabilitiesResolver) Drop(ctx context.Context, obj *v1.Capabilities) (
 }
 
 // FsType is the resolver for the fsType field.
-func (r *cinderResolver) FsType(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *cinderResolver) FsType(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: FsType - fsType")
 
 	return nil, nil
 }
 
 // ReadOnly is the resolver for the readOnly field.
-func (r *cinderResolver) ReadOnly(ctx context.Context, obj *v1beta1.FSType) (*bool, error) {
+func (r *cinderResolver) ReadOnly(ctx context.Context, obj *v1beta11.FSType) (*bool, error) {
 	log.Printf("not implemented: ReadOnly - readOnly")
 
 	return nil, nil
 }
 
 // SecretRef is the resolver for the secretRef field.
-func (r *cinderResolver) SecretRef(ctx context.Context, obj *v1beta1.FSType) (*model.SecretRef3, error) {
+func (r *cinderResolver) SecretRef(ctx context.Context, obj *v1beta11.FSType) (*model.SecretRef3, error) {
 	log.Printf("not implemented: SecretRef - secretRef")
 
 	return nil, nil
 }
 
 // VolumeID is the resolver for the volumeID field.
-func (r *cinderResolver) VolumeID(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *cinderResolver) VolumeID(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: VolumeID - volumeID")
 
 	return "", nil
@@ -177,13 +177,6 @@ func (r *configMapResolver) Data(ctx context.Context, obj *v1.ConfigMap) (*strin
 	return nil, nil
 }
 
-// Immutable is the resolver for the immutable field.
-func (r *configMapResolver) Immutable(ctx context.Context, obj *v1.ConfigMap) (*bool, error) {
-	log.Printf("not implemented: Immutable - immutable")
-
-	return nil, nil
-}
-
 // Metadata is the resolver for the metadata field.
 func (r *configMapResolver) Metadata(ctx context.Context, obj *v1.ConfigMap) (*model.Metadata, error) {
 	log.Printf("not implemented: Metadata - metadata")
@@ -227,28 +220,28 @@ func (r *deleteOptionsResolver) PropagationPolicy(ctx context.Context, obj *v11.
 }
 
 // DefaultMode is the resolver for the defaultMode field.
-func (r *downwardAPIResolver) DefaultMode(ctx context.Context, obj *v1beta1.FSType) (*int, error) {
+func (r *downwardAPIResolver) DefaultMode(ctx context.Context, obj *v1beta11.FSType) (*int, error) {
 	log.Printf("not implemented: DefaultMode - defaultMode")
 
 	return nil, nil
 }
 
 // Items is the resolver for the items field.
-func (r *downwardAPIResolver) Items(ctx context.Context, obj *v1beta1.FSType) ([]*model.Items10ListItem, error) {
+func (r *downwardAPIResolver) Items(ctx context.Context, obj *v1beta11.FSType) ([]*model.Items10ListItem, error) {
 	log.Printf("not implemented: Items - items")
 
 	return nil, nil
 }
 
 // Medium is the resolver for the medium field.
-func (r *emptyDirResolver) Medium(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *emptyDirResolver) Medium(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Medium - medium")
 
 	return nil, nil
 }
 
 // SizeLimit is the resolver for the sizeLimit field.
-func (r *emptyDirResolver) SizeLimit(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *emptyDirResolver) SizeLimit(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: SizeLimit - sizeLimit")
 
 	return nil, nil
@@ -280,6 +273,11 @@ func (r *endpointsListResolver) Metadata(ctx context.Context, obj *v1.EndpointsL
 	log.Printf("not implemented: Metadata - metadata")
 
 	return nil, nil
+}
+
+// VolumeClaimTemplate is the resolver for the volumeClaimTemplate field.
+func (r *ephemeralResolver) VolumeClaimTemplate(ctx context.Context, obj *v1beta11.FSType) (*model.VolumeClaimTemplate, error) {
+	panic(fmt.Errorf("not implemented: VolumeClaimTemplate - volumeClaimTemplate"))
 }
 
 // EventTime is the resolver for the eventTime field.
@@ -360,105 +358,105 @@ func (r *eventListResolver) Metadata(ctx context.Context, obj *v1.EventList) (*m
 }
 
 // Driver is the resolver for the driver field.
-func (r *flexVolumeResolver) Driver(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *flexVolumeResolver) Driver(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Driver - driver")
 
 	return "", nil
 }
 
 // FsType is the resolver for the fsType field.
-func (r *flexVolumeResolver) FsType(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *flexVolumeResolver) FsType(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: FsType - fsType")
 
 	return nil, nil
 }
 
 // Options is the resolver for the options field.
-func (r *flexVolumeResolver) Options(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *flexVolumeResolver) Options(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Options - options")
 
 	return nil, nil
 }
 
 // ReadOnly is the resolver for the readOnly field.
-func (r *flexVolumeResolver) ReadOnly(ctx context.Context, obj *v1beta1.FSType) (*bool, error) {
+func (r *flexVolumeResolver) ReadOnly(ctx context.Context, obj *v1beta11.FSType) (*bool, error) {
 	log.Printf("not implemented: ReadOnly - readOnly")
 
 	return nil, nil
 }
 
 // SecretRef is the resolver for the secretRef field.
-func (r *flexVolumeResolver) SecretRef(ctx context.Context, obj *v1beta1.FSType) (*model.SecretRef4, error) {
+func (r *flexVolumeResolver) SecretRef(ctx context.Context, obj *v1beta11.FSType) (*model.SecretRef4, error) {
 	log.Printf("not implemented: SecretRef - secretRef")
 
 	return nil, nil
 }
 
 // DatasetName is the resolver for the datasetName field.
-func (r *flockerResolver) DatasetName(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *flockerResolver) DatasetName(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: DatasetName - datasetName")
 
 	return nil, nil
 }
 
 // DatasetUUID is the resolver for the datasetUUID field.
-func (r *flockerResolver) DatasetUUID(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *flockerResolver) DatasetUUID(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: DatasetUUID - datasetUUID")
 
 	return nil, nil
 }
 
 // Directory is the resolver for the directory field.
-func (r *gitRepoResolver) Directory(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *gitRepoResolver) Directory(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Directory - directory")
 
 	return nil, nil
 }
 
 // Repository is the resolver for the repository field.
-func (r *gitRepoResolver) Repository(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *gitRepoResolver) Repository(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Repository - repository")
 
 	return "", nil
 }
 
 // Revision is the resolver for the revision field.
-func (r *gitRepoResolver) Revision(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *gitRepoResolver) Revision(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Revision - revision")
 
 	return nil, nil
 }
 
 // Endpoints is the resolver for the endpoints field.
-func (r *glusterfsResolver) Endpoints(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *glusterfsResolver) Endpoints(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Endpoints - endpoints")
 
 	return "", nil
 }
 
 // Path is the resolver for the path field.
-func (r *glusterfsResolver) Path(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *glusterfsResolver) Path(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Path - path")
 
 	return "", nil
 }
 
 // ReadOnly is the resolver for the readOnly field.
-func (r *glusterfsResolver) ReadOnly(ctx context.Context, obj *v1beta1.FSType) (*bool, error) {
+func (r *glusterfsResolver) ReadOnly(ctx context.Context, obj *v1beta11.FSType) (*bool, error) {
 	log.Printf("not implemented: ReadOnly - readOnly")
 
 	return nil, nil
 }
 
 // Path is the resolver for the path field.
-func (r *hostPathResolver) Path(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *hostPathResolver) Path(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Path - path")
 
 	return "", nil
 }
 
 // Type is the resolver for the type field.
-func (r *hostPathResolver) Type(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *hostPathResolver) Type(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Type - type")
 
 	return nil, nil
@@ -2151,12 +2149,12 @@ func (r *queryResolver) PersistentVolumeList(ctx context.Context, allowWatchBook
 
 // Pod is the resolver for the pod field.
 func (r *queryResolver) Pod(ctx context.Context, name string, namespace string, pretty *string) (*v1.Pod, error) {
-	return r.Clientset.CoreV1().Pods(namespace).Get(name, v11.GetOptions{})
+	return r.Clientset.CoreV1().Pods(namespace).Get(ctx, name, v11.GetOptions{})
 }
 
 // PodList is the resolver for the podList field.
 func (r *queryResolver) PodList(ctx context.Context, allowWatchBookmarks *bool, continueArg *string, fieldSelector *string, labelSelector *string, limit *int, namespace string, pretty *string, resourceVersion *string, resourceVersionMatch *string, sendInitialEvents *bool, timeoutSeconds *int, watch *bool) (*v1.PodList, error) {
-	return r.Clientset.CoreV1().Pods(namespace).List(v11.ListOptions{})
+	return r.Clientset.CoreV1().Pods(namespace).List(ctx, v11.ListOptions{})
 }
 
 // PodTemplate is the resolver for the podTemplate field.
@@ -2300,42 +2298,42 @@ func (r *queryResolver) ServiceList(ctx context.Context, allowWatchBookmarks *bo
 }
 
 // Group is the resolver for the group field.
-func (r *quobyteResolver) Group(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *quobyteResolver) Group(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Group - group")
 
 	return nil, nil
 }
 
 // ReadOnly is the resolver for the readOnly field.
-func (r *quobyteResolver) ReadOnly(ctx context.Context, obj *v1beta1.FSType) (*bool, error) {
+func (r *quobyteResolver) ReadOnly(ctx context.Context, obj *v1beta11.FSType) (*bool, error) {
 	log.Printf("not implemented: ReadOnly - readOnly")
 
 	return nil, nil
 }
 
 // Registry is the resolver for the registry field.
-func (r *quobyteResolver) Registry(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *quobyteResolver) Registry(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Registry - registry")
 
 	return "", nil
 }
 
 // Tenant is the resolver for the tenant field.
-func (r *quobyteResolver) Tenant(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *quobyteResolver) Tenant(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: Tenant - tenant")
 
 	return nil, nil
 }
 
 // User is the resolver for the user field.
-func (r *quobyteResolver) User(ctx context.Context, obj *v1beta1.FSType) (*string, error) {
+func (r *quobyteResolver) User(ctx context.Context, obj *v1beta11.FSType) (*string, error) {
 	log.Printf("not implemented: User - user")
 
 	return nil, nil
 }
 
 // Volume is the resolver for the volume field.
-func (r *quobyteResolver) Volume(ctx context.Context, obj *v1beta1.FSType) (string, error) {
+func (r *quobyteResolver) Volume(ctx context.Context, obj *v1beta11.FSType) (string, error) {
 	log.Printf("not implemented: Volume - volume")
 
 	return "", nil
@@ -2488,6 +2486,11 @@ func (r *scopeSelectorResolver) MatchExpressions(ctx context.Context, obj *v1.Sc
 	return nil, nil
 }
 
+// Type is the resolver for the type field.
+func (r *seccompProfileResolver) Type(ctx context.Context, obj *v1.SeccompProfile) (string, error) {
+	panic(fmt.Errorf("not implemented: Type - type"))
+}
+
 // Items is the resolver for the items field.
 func (r *secretResolver) Items(ctx context.Context, obj *v1.Secret) ([]*model.Items12ListItem, error) {
 	log.Printf("not implemented: Items - items")
@@ -2540,13 +2543,6 @@ func (r *securityContextResolver) RunAsUser(ctx context.Context, obj *v1.Securit
 // SeLinuxOptions is the resolver for the seLinuxOptions field.
 func (r *securityContextResolver) SeLinuxOptions(ctx context.Context, obj *v1.SecurityContext) (*model.SeLinuxOptions, error) {
 	log.Printf("not implemented: SeLinuxOptions - seLinuxOptions")
-
-	return nil, nil
-}
-
-// SeccompProfile is the resolver for the seccompProfile field.
-func (r *securityContextResolver) SeccompProfile(ctx context.Context, obj *v1.SecurityContext) (*model.SeccompProfile, error) {
-	log.Printf("not implemented: SeccompProfile - seccompProfile")
 
 	return nil, nil
 }
@@ -2723,6 +2719,9 @@ func (r *Resolver) Endpoints() generated.EndpointsResolver { return &endpointsRe
 // EndpointsList returns generated.EndpointsListResolver implementation.
 func (r *Resolver) EndpointsList() generated.EndpointsListResolver { return &endpointsListResolver{r} }
 
+// Ephemeral returns generated.EphemeralResolver implementation.
+func (r *Resolver) Ephemeral() generated.EphemeralResolver { return &ephemeralResolver{r} }
+
 // Event returns generated.EventResolver implementation.
 func (r *Resolver) Event() generated.EventResolver { return &eventResolver{r} }
 
@@ -2869,6 +2868,11 @@ func (r *Resolver) ScaleIO() generated.ScaleIOResolver { return &scaleIOResolver
 // ScopeSelector returns generated.ScopeSelectorResolver implementation.
 func (r *Resolver) ScopeSelector() generated.ScopeSelectorResolver { return &scopeSelectorResolver{r} }
 
+// SeccompProfile returns generated.SeccompProfileResolver implementation.
+func (r *Resolver) SeccompProfile() generated.SeccompProfileResolver {
+	return &seccompProfileResolver{r}
+}
+
 // Secret returns generated.SecretResolver implementation.
 func (r *Resolver) Secret() generated.SecretResolver { return &secretResolver{r} }
 
@@ -2921,6 +2925,7 @@ type downwardAPIResolver struct{ *Resolver }
 type emptyDirResolver struct{ *Resolver }
 type endpointsResolver struct{ *Resolver }
 type endpointsListResolver struct{ *Resolver }
+type ephemeralResolver struct{ *Resolver }
 type eventResolver struct{ *Resolver }
 type eventListResolver struct{ *Resolver }
 type flexVolumeResolver struct{ *Resolver }
@@ -2961,6 +2966,7 @@ type resourceQuotaResolver struct{ *Resolver }
 type resourceQuotaListResolver struct{ *Resolver }
 type scaleIOResolver struct{ *Resolver }
 type scopeSelectorResolver struct{ *Resolver }
+type seccompProfileResolver struct{ *Resolver }
 type secretResolver struct{ *Resolver }
 type secretListResolver struct{ *Resolver }
 type securityContextResolver struct{ *Resolver }

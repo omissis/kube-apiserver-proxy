@@ -4,8 +4,7 @@ package model
 
 import (
 	"k8s.io/api/core/v1"
-	"k8s.io/api/extensions/v1beta1"
-	v1beta11 "k8s.io/api/policy/v1beta1"
+	"k8s.io/api/policy/v1beta1"
 	v11 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -1211,34 +1210,6 @@ type EnvListItemInput struct {
 	Value *string `json:"value,omitempty"`
 	// Source for the environment variable's value. Cannot be used if value is not empty.
 	ValueFrom *ValueFromInput `json:"valueFrom,omitempty"`
-}
-
-// ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed.
-//
-// Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity
-//
-//	tracking are needed,
-//
-// c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through
-//
-//	a PersistentVolumeClaim (see EphemeralVolumeSource for more
-//	information on the connection between this volume type
-//	and PersistentVolumeClaim).
-//
-// Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod.
-//
-// Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information.
-//
-// A pod can use both types of ephemeral volumes and persistent volumes at the same time.
-type Ephemeral struct {
-	// Will be used to create a stand-alone PVC to provision the volume. The pod in which this EphemeralVolumeSource is embedded will be the owner of the PVC, i.e. the PVC will be deleted together with the pod.  The name of the PVC will be `<pod name>-<volume name>` where `<volume name>` is the name from the `PodSpec.Volumes` array entry. Pod validation will reject the pod if the concatenated name is not valid for a PVC (for example, too long).
-	//
-	// An existing PVC with that name that is not owned by the pod will *not* be used for the pod to avoid using an unrelated volume by mistake. Starting the pod is then blocked until the unrelated PVC is removed. If such a pre-created PVC is meant to be used by the pod, the PVC has to updated with an owner reference to the pod once the pod exists. Normally this should not be necessary, but it may be useful when manually reconstructing a broken cluster.
-	//
-	// This field is read-only and no changes will be made by Kubernetes to the PVC after it has been created.
-	//
-	// Required, must not be nil.
-	VolumeClaimTemplate *VolumeClaimTemplate `json:"volumeClaimTemplate,omitempty"`
 }
 
 type EphemeralContainerStatusesListItem struct {
@@ -4846,16 +4817,6 @@ type SeLinuxOptionsInput struct {
 	User *string `json:"user,omitempty"`
 }
 
-// The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. Note that this field cannot be set when spec.os.name is windows.
-type SeccompProfile struct {
-	// localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must only be set if type is "Localhost".
-	LocalhostProfile *string `json:"localhostProfile,omitempty"`
-	// type indicates which kind of seccomp profile will be applied. Valid options are:
-	//
-	// Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.
-	Type string `json:"type"`
-}
-
 // The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.
 type SeccompProfile2 struct {
 	// localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must only be set if type is "Localhost".
@@ -5227,7 +5188,7 @@ type SecurityContext2 struct {
 	// The SELinux context to be applied to the container. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in PodSecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is windows.
 	SeLinuxOptions *SeLinuxOptions `json:"seLinuxOptions,omitempty"`
 	// The seccomp options to use by this container. If seccomp options are provided at both the pod & container level, the container options override the pod options. Note that this field cannot be set when spec.os.name is windows.
-	SeccompProfile *SeccompProfile `json:"seccompProfile,omitempty"`
+	SeccompProfile *v1.SeccompProfile `json:"seccompProfile,omitempty"`
 	// The Windows specific settings applied to all containers. If unspecified, the options from the PodSecurityContext will be used. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. Note that this field cannot be set when spec.os.name is linux.
 	WindowsOptions *WindowsOptions `json:"windowsOptions,omitempty"`
 }
@@ -5673,9 +5634,9 @@ type Spec12 struct {
 	// persistentVolumeReclaimPolicy defines what happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming
 	PersistentVolumeReclaimPolicy *string `json:"persistentVolumeReclaimPolicy,omitempty"`
 	// photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
-	PhotonPersistentDisk *v1beta11.FSType `json:"photonPersistentDisk,omitempty"`
+	PhotonPersistentDisk *v1beta1.FSType `json:"photonPersistentDisk,omitempty"`
 	// portworxVolume represents a portworx volume attached and mounted on kubelets host machine
-	PortworxVolume *v1beta11.FSType `json:"portworxVolume,omitempty"`
+	PortworxVolume *v1beta1.FSType `json:"portworxVolume,omitempty"`
 	// quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 	Quobyte *v1beta1.FSType `json:"quobyte,omitempty"`
 	// rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
@@ -5689,7 +5650,7 @@ type Spec12 struct {
 	// volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state. Value of Filesystem is implied when not included in spec.
 	VolumeMode *string `json:"volumeMode,omitempty"`
 	// vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
-	VsphereVolume *v1beta11.FSType `json:"vsphereVolume,omitempty"`
+	VsphereVolume *v1beta1.FSType `json:"vsphereVolume,omitempty"`
 }
 
 // spec defines a specification of a persistent volume owned by the cluster. Provisioned by an administrator. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistent-volumes
@@ -7087,7 +7048,7 @@ type VolumesListItem struct {
 	// Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information.
 	//
 	// A pod can use both types of ephemeral volumes and persistent volumes at the same time.
-	Ephemeral *Ephemeral `json:"ephemeral,omitempty"`
+	Ephemeral *v1beta1.FSType `json:"ephemeral,omitempty"`
 	// fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
 	Fc *Fc `json:"fc,omitempty"`
 	// flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin.
@@ -7111,23 +7072,23 @@ type VolumesListItem struct {
 	// persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
 	PersistentVolumeClaim *PersistentVolumeClaim2 `json:"persistentVolumeClaim,omitempty"`
 	// photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
-	PhotonPersistentDisk *v1beta11.FSType `json:"photonPersistentDisk,omitempty"`
+	PhotonPersistentDisk *v1beta1.FSType `json:"photonPersistentDisk,omitempty"`
 	// portworxVolume represents a portworx volume attached and mounted on kubelets host machine
-	PortworxVolume *v1beta11.FSType `json:"portworxVolume,omitempty"`
+	PortworxVolume *v1beta1.FSType `json:"portworxVolume,omitempty"`
 	// projected items for all in one resources secrets, configmaps, and downward API
-	Projected *v1beta11.FSType `json:"projected,omitempty"`
+	Projected *v1beta1.FSType `json:"projected,omitempty"`
 	// quobyte represents a Quobyte mount on the host that shares a pod's lifetime
 	Quobyte *v1beta1.FSType `json:"quobyte,omitempty"`
 	// rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md
 	Rbd *Rbd `json:"rbd,omitempty"`
 	// scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
-	ScaleIo *v1beta11.FSType `json:"scaleIO,omitempty"`
+	ScaleIo *v1beta1.FSType `json:"scaleIO,omitempty"`
 	// secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
 	Secret *Secret2 `json:"secret,omitempty"`
 	// storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
 	Storageos *Storageos `json:"storageos,omitempty"`
 	// vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine
-	VsphereVolume *v1beta11.FSType `json:"vsphereVolume,omitempty"`
+	VsphereVolume *v1beta1.FSType `json:"vsphereVolume,omitempty"`
 }
 
 type VolumesListItemInput struct {
