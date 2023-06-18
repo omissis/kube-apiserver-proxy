@@ -7,6 +7,13 @@ ingress:
     - secretName: wildcard.kube-apiserver-proxy.dev-tls
       hosts:
         - api.kube-apiserver-proxy.dev
+
 service:
   type: ClusterIP
   port: 8080
+
+clusterRole:
+  rules:
+    - apiGroups: ["*"]
+      resources: ["*"]
+      verbs: ["*"]

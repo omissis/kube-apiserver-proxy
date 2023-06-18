@@ -60,3 +60,16 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Prints a slice of strings.
+It correctly outputs values such as ["*"].
+*/}}
+{{- define "kube-apiserver-proxy.stringSlice" -}}
+[
+{{- range $i, $el := . -}}
+    {{- if ne $i 0 -}}, {{- end -}}
+    {{- . | quote -}}
+{{- end -}}
+]
+{{- end }}

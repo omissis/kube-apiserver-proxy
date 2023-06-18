@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-apiserver-proxy
+rules:
+{{- range .Values.clusterRole.rules }}
+  - apiGroups: {{ include "kube-apiserver-proxy.stringSlice" .apiGroups }}
+    resources:  {{ include "kube-apiserver-proxy.stringSlice" .resources }}
+    verbs: {{ include "kube-apiserver-proxy.stringSlice" .verbs }}
+{{- end }}

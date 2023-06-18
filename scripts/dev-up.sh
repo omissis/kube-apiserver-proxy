@@ -74,8 +74,8 @@ else
 fi
 
 echo "Starting Tilt's dev environment..."
-kind get kubeconfig --name "${PROJECT_NAME}-kind" > "${WORKING_DIR}/configs/.kubeconfig"
-kubectl --kubeconfig "${WORKING_DIR}/configs/.kubeconfig" config set-context "${PROJECT_NAME}-kind"
-export KUBECONFIG="${WORKING_DIR}/configs/.kubeconfig" && tilt up -f "${WORKING_DIR}/Tiltfile"
+kind get kubeconfig --name "${PROJECT_NAME}-kind" > "${WORKING_DIR}/configs/kubeconfig"
+kubectl --kubeconfig "${WORKING_DIR}/configs/kubeconfig" config set-context "${PROJECT_NAME}-kind"
+export KUBECONFIG="${WORKING_DIR}/configs/kubeconfig" && tilt up -f "${WORKING_DIR}/Tiltfile"
 
 echo "Done."

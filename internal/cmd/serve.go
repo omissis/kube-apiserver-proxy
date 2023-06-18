@@ -2,13 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"net/http"
 
+	"github.com/labstack/echo"
 	"github.com/spf13/cobra"
 
 	"github.com/omissis/kube-apiserver-proxy/internal/app"
+	"github.com/omissis/kube-apiserver-proxy/internal/kube"
 )
+
+const kubeApiServer = "kubernetes.default.svc"
 
 func NewServeCommand(ctr *app.Container) *cobra.Command {
 	cmd := &cobra.Command{
@@ -18,12 +20,16 @@ func NewServeCommand(ctr *app.Container) *cobra.Command {
 		RunE: func(_ *cobra.Command, _ []string) error {
 			fmt.Println("Running the kube-apiserver-proxy server...")
 
-			http.Handle("/", ctr.GQLPlaygroundHandler())
-			http.Handle("/query", ctr.GQLServerHandler())
+			ctr.Echo().Any("/*", func(c echo.Context) error {
+				group, version, err := kube.GetGroupVersionFromURI(c.Request().RequestURI)
+				if err != nil {
+					return fmt.Errorf("cannot get group and version from request uri: %w", err)
+				}
 
-			log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
+				return kube.EchoProxy(ctr.K8sRESTClient(group, version), c)
+			})
 
-			return http.ListenAndServe(":8080", nil)
+			return ctr.Echo().Start(fmt.Sprintf("%s:%d", ctr.APIServerHost, ctr.APIServerPort))
 		},
 	}
 

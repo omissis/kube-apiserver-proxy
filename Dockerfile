@@ -15,9 +15,6 @@ RUN go mod download
 COPY internal internal
 COPY main.go main.go
 
-COPY gqlgen.yml gqlgen.yml
-# RUN go run github.com/99designs/gqlgen generate && go generate ./...
-
 ENTRYPOINT [ "go", "run", "main.go" ]
 
 CMD [ "serve" ]
