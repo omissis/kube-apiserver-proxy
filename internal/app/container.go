@@ -2,13 +2,13 @@ package app
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/kubernetes"
+	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
+	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
 	"k8s.io/client-go/rest"
-	"k8s.io/kubectl/pkg/scheme"
 )
 
 var ErrCannotCreateContainer = fmt.Errorf("cannot create container")
@@ -31,12 +31,15 @@ type Parameters struct {
 	APIServerHost     string
 	APIServerPort     uint16
 	APIAllowedOrigins []string
+	KubeconfigPath    string
 }
 
 type services struct {
-	clientset      *kubernetes.Clientset
-	echo           *echo.Echo
-	k8sRESTClients map[string]map[string]*rest.RESTClient
+	echo                 *echo.Echo
+	k8sRESTClientFactory *kube.DefaultK8sRESTClientFactory
+	k8sHTTProxy          *proxy.HTTP
+	k8sHttpClient        *http.Client
+	k8sRESTConfigFactory *kube.DefaultRESTConfigFactory
 }
 
 func NewContainer() *Container {
@@ -48,35 +51,6 @@ func NewContainer() *Container {
 type Container struct {
 	Parameters
 	services
-}
-
-func (c *Container) K8sRESTClient(group, version string) *rest.RESTClient {
-	if c.k8sRESTClients == nil {
-		c.k8sRESTClients = make(map[string]map[string]*rest.RESTClient, 1)
-	}
-
-	restClient, ok := c.k8sRESTClients[group][version]
-	if !ok {
-		config, err := rest.InClusterConfig()
-		if err != nil {
-			panic(err.Error())
-		}
-
-		config.GroupVersion = &schema.GroupVersion{
-			Group:   "apps",
-			Version: "v1",
-		}
-
-		config.APIPath = "/apis"
-		config.NegotiatedSerializer = scheme.Codecs.WithoutConversion()
-
-		restClient, err = rest.RESTClientFor(config)
-		if err != nil {
-			panic(err.Error())
-		}
-	}
-
-	return restClient
 }
 
 func (c *Container) Echo() *echo.Echo {
@@ -94,22 +68,54 @@ func (c *Container) Echo() *echo.Echo {
 	return c.echo
 }
 
-func (c *Container) Clientset() *kubernetes.Clientset {
-	if c.clientset == nil {
-		// creates the in-cluster config
-		config, err := rest.InClusterConfig()
-		if err != nil {
-			panic(err.Error())
-		}
-
-		// creates the clientset
-		clientset, err := kubernetes.NewForConfig(config)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		c.clientset = clientset
+func (c *Container) K8sHTTPProxy() *proxy.HTTP {
+	if c.k8sHTTProxy == nil {
+		c.k8sHTTProxy = proxy.NewHTTP(c.K8sRESTClientFactory(), []proxy.ResponseBodyTransformer{
+			proxy.NewJqResponseBodyTransformer(),
+		})
 	}
 
-	return c.clientset
+	return c.k8sHTTProxy
+}
+
+func (c *Container) K8sRESTClientFactory() *kube.DefaultK8sRESTClientFactory {
+	if c.k8sRESTClientFactory == nil {
+		c.k8sRESTClientFactory = kube.NewDefaultK8sRESTClientFactory(
+			c.K8sRESTConfigFactory(),
+			c.K8sHttpClient(),
+			c.KubeconfigPath,
+		)
+	}
+
+	return c.k8sRESTClientFactory
+}
+
+func (c *Container) K8sRESTConfigFactory() *kube.DefaultRESTConfigFactory {
+	if c.k8sRESTConfigFactory == nil {
+		c.k8sRESTConfigFactory = kube.NewDefaultRESTConfigFactory()
+	}
+
+	return c.k8sRESTConfigFactory
+}
+
+func (c *Container) K8sHttpClient() *http.Client {
+	if c.k8sHttpClient == nil {
+		k8sHttpClient, err := rest.HTTPClientFor(c.K8sRestConfig())
+		if err != nil {
+			panic(err)
+		}
+
+		c.k8sHttpClient = k8sHttpClient
+	}
+
+	return c.k8sHttpClient
+}
+
+func (c *Container) K8sRestConfig() *rest.Config {
+	config, err := c.K8sRESTConfigFactory().New(c.KubeconfigPath)
+	if err != nil {
+		panic(err)
+	}
+
+	return config
 }

@@ -11,10 +11,9 @@ import (
 
 type RootCommand struct {
 	*cobra.Command
-	cfg app.Config
 }
 
-func NewRootCommand(cfg app.Config, versions map[string]string) *RootCommand {
+func NewRootCommand(versions map[string]string) *RootCommand {
 	const envPrefix = ""
 
 	root := &RootCommand{
@@ -28,7 +27,6 @@ func NewRootCommand(cfg app.Config, versions map[string]string) *RootCommand {
 			SilenceUsage:  true,
 			SilenceErrors: true,
 		},
-		cfg: cfg,
 	}
 
 	cobrax.BindFlags(root.Command, cobrax.InitEnvs(envPrefix), log.Fatal, envPrefix)
