@@ -36,7 +36,7 @@ type Parameters struct {
 
 type services struct {
 	echo                 *echo.Echo
-	k8sRESTClientFactory *kube.DefaultK8sRESTClientFactory
+	k8sRESTClientFactory *kube.DefaultRESTClientFactory
 	k8sHTTProxy          *proxy.HTTP
 	k8sHttpClient        *http.Client
 	k8sRESTConfigFactory *kube.DefaultRESTConfigFactory
@@ -70,7 +70,7 @@ func (c *Container) Echo() *echo.Echo {
 
 func (c *Container) K8sHTTPProxy() *proxy.HTTP {
 	if c.k8sHTTProxy == nil {
-		c.k8sHTTProxy = proxy.NewHTTP(c.K8sRESTClientFactory(), []proxy.ResponseBodyTransformer{
+		c.k8sHTTProxy = proxy.NewHTTP(c.RESTClientFactory(), []proxy.ResponseBodyTransformer{
 			proxy.NewJqResponseBodyTransformer(),
 		})
 	}
@@ -78,10 +78,10 @@ func (c *Container) K8sHTTPProxy() *proxy.HTTP {
 	return c.k8sHTTProxy
 }
 
-func (c *Container) K8sRESTClientFactory() *kube.DefaultK8sRESTClientFactory {
+func (c *Container) RESTClientFactory() *kube.DefaultRESTClientFactory {
 	if c.k8sRESTClientFactory == nil {
-		c.k8sRESTClientFactory = kube.NewDefaultK8sRESTClientFactory(
-			c.K8sRESTConfigFactory(),
+		c.k8sRESTClientFactory = kube.NewDefaultRESTClientFactory(
+			c.RESTConfigFactory(),
 			c.K8sHttpClient(),
 			c.KubeconfigPath,
 		)
@@ -90,7 +90,7 @@ func (c *Container) K8sRESTClientFactory() *kube.DefaultK8sRESTClientFactory {
 	return c.k8sRESTClientFactory
 }
 
-func (c *Container) K8sRESTConfigFactory() *kube.DefaultRESTConfigFactory {
+func (c *Container) RESTConfigFactory() *kube.DefaultRESTConfigFactory {
 	if c.k8sRESTConfigFactory == nil {
 		c.k8sRESTConfigFactory = kube.NewDefaultRESTConfigFactory()
 	}
@@ -112,7 +112,7 @@ func (c *Container) K8sHttpClient() *http.Client {
 }
 
 func (c *Container) K8sRestConfig() *rest.Config {
-	config, err := c.K8sRESTConfigFactory().New(c.KubeconfigPath)
+	config, err := c.RESTConfigFactory().New(c.KubeconfigPath)
 	if err != nil {
 		panic(err)
 	}

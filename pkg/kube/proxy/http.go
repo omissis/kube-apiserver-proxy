@@ -10,7 +10,7 @@ import (
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 )
 
-func NewHTTP(restClientFactory kube.K8sRESTClientFactory, responseTransformers []ResponseBodyTransformer) *HTTP {
+func NewHTTP(restClientFactory kube.RESTClientFactory, responseTransformers []ResponseBodyTransformer) *HTTP {
 	return &HTTP{
 		restClientFactory:    restClientFactory,
 		responseTransformers: responseTransformers,
@@ -19,7 +19,7 @@ func NewHTTP(restClientFactory kube.K8sRESTClientFactory, responseTransformers [
 
 type HTTP struct {
 	responseTransformers []ResponseBodyTransformer
-	restClientFactory    kube.K8sRESTClientFactory
+	restClientFactory    kube.RESTClientFactory
 }
 
 // ServeHTTP implements http.Handler interface

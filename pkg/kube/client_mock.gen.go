@@ -12,31 +12,31 @@ import (
 	rest "k8s.io/client-go/rest"
 )
 
-// MockK8sRESTClientFactory is a mock of K8sRESTClientFactory interface.
-type MockK8sRESTClientFactory struct {
+// MockRESTClientFactory is a mock of RESTClientFactory interface.
+type MockRESTClientFactory struct {
 	ctrl     *gomock.Controller
-	recorder *MockK8sRESTClientFactoryMockRecorder
+	recorder *MockRESTClientFactoryMockRecorder
 }
 
-// MockK8sRESTClientFactoryMockRecorder is the mock recorder for MockK8sRESTClientFactory.
-type MockK8sRESTClientFactoryMockRecorder struct {
-	mock *MockK8sRESTClientFactory
+// MockRESTClientFactoryMockRecorder is the mock recorder for MockRESTClientFactory.
+type MockRESTClientFactoryMockRecorder struct {
+	mock *MockRESTClientFactory
 }
 
-// NewMockK8sRESTClientFactory creates a new mock instance.
-func NewMockK8sRESTClientFactory(ctrl *gomock.Controller) *MockK8sRESTClientFactory {
-	mock := &MockK8sRESTClientFactory{ctrl: ctrl}
-	mock.recorder = &MockK8sRESTClientFactoryMockRecorder{mock}
+// NewMockRESTClientFactory creates a new mock instance.
+func NewMockRESTClientFactory(ctrl *gomock.Controller) *MockRESTClientFactory {
+	mock := &MockRESTClientFactory{ctrl: ctrl}
+	mock.recorder = &MockRESTClientFactoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockK8sRESTClientFactory) EXPECT() *MockK8sRESTClientFactoryMockRecorder {
+func (m *MockRESTClientFactory) EXPECT() *MockRESTClientFactoryMockRecorder {
 	return m.recorder
 }
 
 // Client mocks base method.
-func (m *MockK8sRESTClientFactory) Client(group, version string) (*rest.RESTClient, error) {
+func (m *MockRESTClientFactory) Client(group, version string) (*rest.RESTClient, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Client", group, version)
 	ret0, _ := ret[0].(*rest.RESTClient)
@@ -45,13 +45,13 @@ func (m *MockK8sRESTClientFactory) Client(group, version string) (*rest.RESTClie
 }
 
 // Client indicates an expected call of Client.
-func (mr *MockK8sRESTClientFactoryMockRecorder) Client(group, version interface{}) *gomock.Call {
+func (mr *MockRESTClientFactoryMockRecorder) Client(group, version interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Client", reflect.TypeOf((*MockK8sRESTClientFactory)(nil).Client), group, version)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Client", reflect.TypeOf((*MockRESTClientFactory)(nil).Client), group, version)
 }
 
 // Request mocks base method.
-func (m *MockK8sRESTClientFactory) Request(r http.Request) (*rest.Request, error) {
+func (m *MockRESTClientFactory) Request(r http.Request) (*rest.Request, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Request", r)
 	ret0, _ := ret[0].(*rest.Request)
@@ -60,7 +60,7 @@ func (m *MockK8sRESTClientFactory) Request(r http.Request) (*rest.Request, error
 }
 
 // Request indicates an expected call of Request.
-func (mr *MockK8sRESTClientFactoryMockRecorder) Request(r interface{}) *gomock.Call {
+func (mr *MockRESTClientFactoryMockRecorder) Request(r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Request", reflect.TypeOf((*MockK8sRESTClientFactory)(nil).Request), r)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Request", reflect.TypeOf((*MockRESTClientFactory)(nil).Request), r)
 }

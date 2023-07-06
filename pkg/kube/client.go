@@ -9,31 +9,31 @@ import (
 	"k8s.io/kubectl/pkg/scheme"
 )
 
-type K8sRESTClientFactory interface {
+type RESTClientFactory interface {
 	Client(group string, version string) (*rest.RESTClient, error)
 	Request(r http.Request) (*rest.Request, error)
 }
 
-func NewDefaultK8sRESTClientFactory(
+func NewDefaultRESTClientFactory(
 	restConfigFactory RESTConfigFactory,
 	httpClient *http.Client,
 	kubeconfigPath string,
-) *DefaultK8sRESTClientFactory {
-	return &DefaultK8sRESTClientFactory{
+) *DefaultRESTClientFactory {
+	return &DefaultRESTClientFactory{
 		restConfigFactory: restConfigFactory,
 		httpClient:        httpClient,
 		kubeconfigPath:    kubeconfigPath,
 	}
 }
 
-type DefaultK8sRESTClientFactory struct {
+type DefaultRESTClientFactory struct {
 	clients           map[string]map[string]*rest.RESTClient
 	restConfigFactory RESTConfigFactory
 	httpClient        *http.Client
 	kubeconfigPath    string
 }
 
-func (k *DefaultK8sRESTClientFactory) Client(group string, version string) (*rest.RESTClient, error) {
+func (k *DefaultRESTClientFactory) Client(group string, version string) (*rest.RESTClient, error) {
 	if k.clients == nil {
 		k.clients = make(map[string]map[string]*rest.RESTClient)
 	}
@@ -60,7 +60,7 @@ func (k *DefaultK8sRESTClientFactory) Client(group string, version string) (*res
 	return k.clients[group][version], nil
 }
 
-func (k *DefaultK8sRESTClientFactory) Request(r http.Request) (*rest.Request, error) {
+func (k *DefaultRESTClientFactory) Request(r http.Request) (*rest.Request, error) {
 	group, version, err := GetGroupVersionFromURI(r.URL.Path)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get group and version from request uri: %w", err)
@@ -78,7 +78,7 @@ func (k *DefaultK8sRESTClientFactory) Request(r http.Request) (*rest.Request, er
 		nil
 }
 
-func (k *DefaultK8sRESTClientFactory) newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
+func (k *DefaultRESTClientFactory) newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	if k.httpClient == nil {
 		return rest.RESTClientFor(config)
 	}
@@ -86,7 +86,7 @@ func (k *DefaultK8sRESTClientFactory) newRESTClient(config *rest.Config) (*rest.
 	return rest.RESTClientForConfigAndClient(config, k.httpClient)
 }
 
-func (k *DefaultK8sRESTClientFactory) newRESTConfig(group string, version string) (*rest.Config, error) {
+func (k *DefaultRESTClientFactory) newRESTConfig(group string, version string) (*rest.Config, error) {
 	config, err := k.restConfigFactory.New(k.kubeconfigPath)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create rest config: %w", err)

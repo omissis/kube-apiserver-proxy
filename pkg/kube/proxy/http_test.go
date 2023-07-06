@@ -36,12 +36,12 @@ func TestHTTP_DoServeHTTP(t *testing.T) {
 			Host: "localhost:9876",
 		}, nil)
 
-	f := kube.NewDefaultK8sRESTClientFactory(conFacMock, nil, "")
+	f := kube.NewDefaultRESTClientFactory(conFacMock, nil, "")
 
 	c, _ := f.Client("apps", "v1")
 	rr := rest.NewRequest(c)
 
-	cliFacMock := kube.NewMockK8sRESTClientFactory(ctrl)
+	cliFacMock := kube.NewMockRESTClientFactory(ctrl)
 	cliFacMock.
 		EXPECT().
 		Request(gomock.Any()).

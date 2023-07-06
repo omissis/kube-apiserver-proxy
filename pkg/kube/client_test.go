@@ -33,7 +33,7 @@ func testServerEnv(t *testing.T, groupVersion schema.GroupVersion) (*httptest.Se
 	return httptest.NewServer(&fakeHandler), &fakeHandler, status
 }
 
-func TestNewK8sRESTClientFactory(t *testing.T) {
+func TestNewRESTClientFactory(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -44,14 +44,14 @@ func TestNewK8sRESTClientFactory(t *testing.T) {
 
 	cfMock := kube.NewMockRESTConfigFactory(ctrl)
 
-	f := kube.NewDefaultK8sRESTClientFactory(cfMock, nil, "")
+	f := kube.NewDefaultRESTClientFactory(cfMock, nil, "")
 
 	if f == nil {
-		t.Error("expected non-nil K8sRESTClientFactory")
+		t.Error("expected non-nil RESTClientFactory")
 	}
 }
 
-func TestNewK8sRESTClientFactory_Client(t *testing.T) {
+func TestNewRESTClientFactory_Client(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -95,7 +95,7 @@ func TestNewK8sRESTClientFactory_Client(t *testing.T) {
 					Host: testServer.URL,
 				}, nil)
 
-			f := kube.NewDefaultK8sRESTClientFactory(cfMock, nil, "")
+			f := kube.NewDefaultRESTClientFactory(cfMock, nil, "")
 
 			got, err := f.Client(tC.group, tC.version)
 			if (err != nil) != tC.wantErr {
@@ -117,7 +117,7 @@ func TestNewK8sRESTClientFactory_Client(t *testing.T) {
 	}
 }
 
-func TestNewK8sRESTClientFactory_Request(t *testing.T) {
+func TestNewRESTClientFactory_Request(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -162,7 +162,7 @@ func TestNewK8sRESTClientFactory_Request(t *testing.T) {
 					Host: testServer.URL,
 				}, nil)
 
-			f := kube.NewDefaultK8sRESTClientFactory(cfMock, nil, "")
+			f := kube.NewDefaultRESTClientFactory(cfMock, nil, "")
 
 			req, err := http.NewRequest("GET", "https://api.kube-apiserver-proxy.dev/api/v1/pods", nil)
 			if err != nil {

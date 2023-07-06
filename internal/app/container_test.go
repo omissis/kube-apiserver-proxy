@@ -23,10 +23,10 @@ func TestK8sHTTPProxy(t *testing.T) {
 	assert.NotNil(t, container.K8sHTTPProxy())
 }
 
-func TestK8sRESTClientFactory(t *testing.T) {
+func TestRESTClientFactory(t *testing.T) {
 	t.Parallel()
 
 	container := app.NewContainer()
 
-	assert.NotNil(t, container.K8sRESTClientFactory())
+	assert.NotNil(t, container.RESTClientFactory())
 }
