@@ -143,19 +143,6 @@ format-json-docker: docker-tools
 	$(call run-script-docker,${_DOCKER_TOOLS_IMAGE},format-json)
 
 # ----------------------------------------------------------------------------------------------------------------------
-# GraphQL Targets
-# ----------------------------------------------------------------------------------------------------------------------
-
-.PHONY: generate-graphql generate-graphql-docker
-
-generate-graphql:
-	@scripts/generate-graphql.sh
-
-# TODO: implement docker image for this target
-# generate-graphql-docker:
-# 	$(call run-script-docker,${_DOCKER_GRAPHQL_IMAGE},generate-graphql)
-
-# ----------------------------------------------------------------------------------------------------------------------
 # Golang Targets
 # ----------------------------------------------------------------------------------------------------------------------
 

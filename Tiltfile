@@ -16,9 +16,9 @@ docker_build_with_restart(
   target="dev",
   live_update=[
     sync("./internal", "/app/internal"),
+    sync("./pkg", "/app/pkg"),
     sync("./go.mod", "/app/go.mod"),
     sync("./go.sum", "/app/go.sum"),
-    sync("./gqlgen.yml", "/app/gqlgen.yml"),
     sync("./main.go", "/app/main.go"),
   ],
   build_args={},
@@ -30,7 +30,7 @@ helm_resource(
   './deployments/helm/kube-apiserver-proxy',
   release_name='kube-apiserver-proxy',
   namespace='default',
-  flags=['--values', './deployments/values.dev.yaml'],
+  flags=['--values', './configs/helm-values/kube-apiserver-proxy.yaml'],
   image_deps=['kube-apiserver-proxy'],
   image_keys=[('image.repository', 'image.tag')],
 )

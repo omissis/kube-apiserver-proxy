@@ -13,6 +13,7 @@ COPY go.sum go.sum
 RUN go mod download
 
 COPY internal internal
+COPY pkg pkg
 COPY main.go main.go
 
 ENTRYPOINT [ "go", "run", "main.go" ]

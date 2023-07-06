@@ -13,3 +13,4 @@ tilt_config.json
 tilt_modules
 node_modules
 kubeconfig
+coverage.out
