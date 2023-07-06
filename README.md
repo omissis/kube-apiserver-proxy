@@ -60,7 +60,7 @@ make tools-go
 npm install
 
 # Step 8: start the development environment
-make dev-up CLUSTER_VERSION=1.27.1
+make dev-up CLUSTER_VERSION=1.27.3
 
 # Step 9: stop the development environment
 make dev-down
