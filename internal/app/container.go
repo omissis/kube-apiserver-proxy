@@ -6,9 +6,10 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"k8s.io/client-go/rest"
+
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
-	"k8s.io/client-go/rest"
 )
 
 var ErrCannotCreateContainer = fmt.Errorf("cannot create container")

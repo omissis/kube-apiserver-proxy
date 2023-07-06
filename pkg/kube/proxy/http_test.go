@@ -6,10 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
-	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
 	"go.uber.org/mock/gomock"
 	"k8s.io/client-go/rest"
+
+	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
+	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
 )
 
 func TestHTTP_DoServeHTTP(t *testing.T) {

@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 	gomock "go.uber.org/mock/gomock"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -14,6 +13,8 @@ import (
 	"k8s.io/client-go/rest"
 	utiltesting "k8s.io/client-go/util/testing"
 	"k8s.io/kubectl/pkg/scheme"
+
+	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 )
 
 func testServerEnv(t *testing.T, groupVersion schema.GroupVersion) (*httptest.Server, *utiltesting.FakeHandler, *metav1.Status) {

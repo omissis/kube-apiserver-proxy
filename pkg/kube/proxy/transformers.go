@@ -15,8 +15,7 @@ func NewJqResponseBodyTransformer() *JqResponseBodyTransformer {
 	return &JqResponseBodyTransformer{}
 }
 
-type JqResponseBodyTransformer struct {
-}
+type JqResponseBodyTransformer struct{}
 
 func (jq *JqResponseBodyTransformer) Name() string {
 	return "jq"

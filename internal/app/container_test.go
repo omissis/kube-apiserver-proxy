@@ -3,8 +3,9 @@ package app_test
 import (
 	"testing"
 
-	"github.com/omissis/kube-apiserver-proxy/internal/app"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/omissis/kube-apiserver-proxy/internal/app"
 )
 
 func TestEcho(t *testing.T) {

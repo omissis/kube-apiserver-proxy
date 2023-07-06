@@ -10,7 +10,7 @@ import (
 )
 
 type RESTClientFactory interface {
-	Client(group string, version string) (*rest.RESTClient, error)
+	Client(group, version string) (*rest.RESTClient, error)
 	Request(r http.Request) (*rest.Request, error)
 }
 
@@ -33,7 +33,7 @@ type DefaultRESTClientFactory struct {
 	kubeconfigPath    string
 }
 
-func (k *DefaultRESTClientFactory) Client(group string, version string) (*rest.RESTClient, error) {
+func (k *DefaultRESTClientFactory) Client(group, version string) (*rest.RESTClient, error) {
 	if k.clients == nil {
 		k.clients = make(map[string]map[string]*rest.RESTClient)
 	}
@@ -86,7 +86,7 @@ func (k *DefaultRESTClientFactory) newRESTClient(config *rest.Config) (*rest.RES
 	return rest.RESTClientForConfigAndClient(config, k.httpClient)
 }
 
-func (k *DefaultRESTClientFactory) newRESTConfig(group string, version string) (*rest.Config, error) {
+func (k *DefaultRESTClientFactory) newRESTConfig(group, version string) (*rest.Config, error) {
 	config, err := k.restConfigFactory.New(k.kubeconfigPath)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create rest config: %w", err)

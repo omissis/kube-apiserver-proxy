@@ -15,8 +15,7 @@ func NewDefaultRESTConfigFactory() *DefaultRESTConfigFactory {
 	return &DefaultRESTConfigFactory{}
 }
 
-type DefaultRESTConfigFactory struct {
-}
+type DefaultRESTConfigFactory struct{}
 
 func (r *DefaultRESTConfigFactory) New(kubeconfigPath string) (*rest.Config, error) {
 	var errExt error
