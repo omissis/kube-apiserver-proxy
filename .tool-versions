@@ -4,7 +4,7 @@ golangci-lint 1.53.2
 helm 3.12.1
 jq 1.6
 kind 0.20.0
-kubectl 1.27.3
+kubectl 1.27.4
 make 4.4.1
 mkcert 1.4.4
 nodejs 20.0.0
