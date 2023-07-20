@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Fetch all tags
         run: git fetch --force --tags
       - name: Setup Golang
@@ -57,7 +59,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Run GoReleaser for release
         if: ${{ !contains(github.ref_name, '-') }}
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
           version: '1.19.2'

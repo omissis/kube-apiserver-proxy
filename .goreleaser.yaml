@@ -53,3 +53,11 @@ dockers:
       - "omissis/kube-apiserver-proxy:v{{ .Major }}"
       - "omissis/kube-apiserver-proxy:v{{ .Major }}.{{ .Minor }}"
       - "omissis/kube-apiserver-proxy:{{ .Tag }}"
+    extra_files:
+      - internal
+      - pkg
+      - main.go
+      - go.mod
+      - go.sum
+    build_flag_templates:
+      - "--target=bin"

@@ -14,3 +14,4 @@ tilt_modules
 node_modules
 kubeconfig
 coverage.out
+dist/
