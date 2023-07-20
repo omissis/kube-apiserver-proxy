@@ -5,7 +5,7 @@
 > DO NOT CONSIDER IT UNLESS YOU ARE WILLING TO CONTRIBUTE TO IT
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/omissis/kube-apiserver-proxy?style=flat)](https://github.com/omissis/kube-apiserver-proxy/releases/latest)
-[![GitHub Workflow Status (event)](https://img.shields.io/github/actions/workflow/status/omissis/kube-apiserver-proxy?style=flat)](https://github.com/omissis/kube-apiserver-proxy/actions?workflow=development)
+[![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/omissis/kube-apiserver-proxy/development?style=flat)](https://github.com/omissis/kube-apiserver-proxy/actions?workflow=development)
 [![License](https://img.shields.io/github/license/omissis/kube-apiserver-proxy?style=flat)](/LICENSE)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/omissis/kube-apiserver-proxy?style=flat)](https://tip.golang.org/doc/go1.20)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/omissis/kube-apiserver-proxy?style=flat)](https://github.com/omissis/kube-apiserver-proxy)
