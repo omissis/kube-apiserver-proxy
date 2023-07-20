@@ -1,7 +1,7 @@
 ctlptl 0.8.20
 golang 1.20.5
 golangci-lint 1.53.2
-helm 3.12.1
+helm 3.12.2
 jq 1.6
 kind 0.20.0
 kubectl 1.27.4
