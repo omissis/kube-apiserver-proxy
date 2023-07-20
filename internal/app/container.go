@@ -7,7 +7,7 @@ import (
 
 	"k8s.io/client-go/rest"
 
-	httpx "github.com/omissis/kube-apiserver-proxy/internal/x/http"
+	httpx "github.com/omissis/kube-apiserver-proxy/pkg/http"
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
 )
