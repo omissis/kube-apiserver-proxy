@@ -1,4 +1,4 @@
-FROM golang:1.20.6-alpine3.17 AS dev
+FROM golang:1.20.6-alpine3.18 AS dev
 
 ENV APP_VERSION ${APP_VERSION:-dev}
 ENV GOOS=linux
@@ -12,9 +12,9 @@ COPY go.sum go.sum
 
 RUN go mod download
 
+COPY main.go main.go
 COPY internal internal
 COPY pkg pkg
-COPY main.go main.go
 
 ENTRYPOINT [ "go", "run", "main.go" ]
 
