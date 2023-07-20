@@ -1,0 +1,55 @@
+---
+project_name: kube-apiserver-proxy
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.gitCommit={{.Commit}} -X main.buildTime={{.Date}} -X main.goVersion={{.Env.GO_VERSION}} -X main.osArch={{.Arch}}
+archives:
+  - name_template: "{{ tolower .ProjectName }}-{{ tolower .Os }}-{{ tolower .Arch }}"
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+release:
+  github:
+    owner: omissis
+    name: kube-apiserver-proxy
+  name_template: '{{ .Tag }}'
+  prerelease: auto
+brews:
+  - name: kube-apiserver-proxy
+    tap:
+      owner: omissis
+      name: homebrew-kube-apiserver-proxy
+    skip_upload: auto
+    folder: Formula
+    homepage: 'https://github.com/omissis/kube-apiserver-proxy'
+    description: 'kube-apiserver-proxy binary'
+    test: |
+      system "#{bin}/kube-apiserver-proxy"
+    install: |
+      bin.install 'kube-apiserver-proxy'
+dockers:
+  - skip_push: auto
+    image_templates:
+      - "omissis/kube-apiserver-proxy:latest"
+      - "omissis/kube-apiserver-proxy:v{{ .Major }}"
+      - "omissis/kube-apiserver-proxy:v{{ .Major }}.{{ .Minor }}"
+      - "omissis/kube-apiserver-proxy:{{ .Tag }}"
