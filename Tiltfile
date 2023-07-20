@@ -38,7 +38,7 @@ helm_resource(
 k8s_resource(
   workload="kube-apiserver-proxy",
   links=[
-    link("https://api.kube-apiserver-proxy.dev/", "kube-apiserver-proxy"),
+    link("https://api.kube-apiserver-proxy.dev/api/v1/pods", "kube-apiserver-proxy"),
   ],
   labels="projects",
   trigger_mode=TRIGGER_MODE_AUTO

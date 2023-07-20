@@ -21,10 +21,12 @@ func (r *DefaultRESTConfigFactory) New(kubeconfigPath string) (*rest.Config, err
 	var errExt error
 
 	if kubeconfigPath != "" {
-		config, errExt := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
-		if errExt == nil {
+		config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
+		if err == nil {
 			return config, nil
 		}
+
+		errExt = err
 	}
 
 	config, errInt := rest.InClusterConfig()

@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+const minURIComponentsCount = 3
+
+var (
+	ErrMalformedURI      = fmt.Errorf("uri has less than 3 parts in it")
+	ErrURIIsNotSupported = fmt.Errorf("uri is not supported")
+)
+
 func GetGroupVersionFromURI(uri string) (string, string, error) {
 	if uri == "/api" {
 		return "core", "", nil
@@ -21,12 +28,12 @@ func GetGroupVersionFromURI(uri string) (string, string, error) {
 	if strings.HasPrefix(uri, "/apis/") {
 		parts := strings.Split(strings.Trim(uri, "/"), "/")
 
-		if len(parts) < 3 {
-			return "", "", fmt.Errorf("uri '%s' has less than 3 parts in it", uri)
+		if len(parts) < minURIComponentsCount {
+			return "", "", fmt.Errorf("%w '%s'", ErrMalformedURI, uri)
 		}
 
 		return parts[1], parts[2], nil
 	}
 
-	return "", "", fmt.Errorf("uri '%s' is not supported", uri)
+	return "", "", fmt.Errorf("%w: '%s'", ErrURIIsNotSupported, uri)
 }

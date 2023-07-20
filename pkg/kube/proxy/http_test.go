@@ -1,13 +1,22 @@
+//go:build unit
+
 package proxy_test
 
 import (
-	"log"
+	"context"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"go.uber.org/mock/gomock"
-	"k8s.io/client-go/rest"
+	v1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	rest "k8s.io/client-go/rest"
+	utiltesting "k8s.io/client-go/util/testing"
+	"k8s.io/kubectl/pkg/scheme"
 
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
@@ -17,29 +26,14 @@ func TestHTTP_DoServeHTTP(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	go func() {
-		http.HandleFunc("/api/v1/pods", func(w http.ResponseWriter, _ *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			w.Header().Add("Content-Type", "application/json")
-			w.Write([]byte(`{"foo":"bar"}`))
-		})
+	testServer, _, obj := testServerEnv(t, 200)
+	defer testServer.Close()
 
-		if err := http.ListenAndServe("localhost:9876", nil); err != nil {
-			log.Fatalf("cannot start http server: %v", err)
-		}
-	}()
+	c, err := restClient(testServer)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
-	conFacMock := kube.NewMockRESTConfigFactory(ctrl)
-	conFacMock.
-		EXPECT().
-		New(gomock.Any()).
-		Return(&rest.Config{
-			Host: "localhost:9876",
-		}, nil)
-
-	f := kube.NewDefaultRESTClientFactory(conFacMock, nil, "")
-
-	c, _ := f.Client("apps", "v1")
 	rr := rest.NewRequest(c)
 
 	cliFacMock := kube.NewMockRESTClientFactory(ctrl)
@@ -48,14 +42,6 @@ func TestHTTP_DoServeHTTP(t *testing.T) {
 		Request(gomock.Any()).
 		Return(rr, nil)
 
-	hr, err := http.NewRequest("GET", "https://api.kube-apiserver-proxy.dev/api/v1/pods", nil)
-	if err != nil {
-		t.Fatalf("cannot create http request: %v", err)
-	}
-
-	w := httptest.NewRecorder()
-	w.Write([]byte(`{"foo":"bar"}`))
-
 	hp := proxy.NewHTTP(
 		cliFacMock,
 		[]proxy.ResponseBodyTransformer{
@@ -63,11 +49,52 @@ func TestHTTP_DoServeHTTP(t *testing.T) {
 		},
 	)
 
-	if err := hp.DoServeHTTP(w, *hr); err != nil {
+	r, err := http.NewRequest("GET", "https://api.kube-apiserver-proxy.test/api/v1/pods?jq=.kind", nil)
+	if err != nil {
+		t.Fatalf("cannot create http request: %v", err)
+	}
+
+	w := httptest.NewRecorder()
+
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	if err := hp.DoServeHTTP(ctx, w, *r); err != nil {
 		t.Errorf("did not expect an error, %v given", err)
 	}
 
-	if got, want := w.Body.String(), `{"foo":"bar"}`; got != want {
-		t.Errorf("w.Body.String() = %s, want %s", got, want)
+	if got, want := strings.TrimSpace(w.Body.String()), `"`+obj.Kind+`"`; got != want {
+		t.Errorf("got = %s, want %s", got, want)
 	}
+}
+
+func testServerEnv(t *testing.T, statusCode int) (*httptest.Server, *utiltesting.FakeHandler, *corev1.PodList) {
+	podList := &corev1.PodList{
+		TypeMeta: metav1.TypeMeta{APIVersion: "v1", Kind: "PodList"},
+		Items:    []corev1.Pod{},
+	}
+
+	body, _ := runtime.Encode(scheme.Codecs.LegacyCodec(corev1.SchemeGroupVersion), podList)
+
+	fakeHandler := utiltesting.FakeHandler{
+		StatusCode:   statusCode,
+		ResponseBody: string(body),
+		T:            t,
+	}
+
+	testServer := httptest.NewServer(&fakeHandler)
+
+	return testServer, &fakeHandler, podList
+}
+
+func restClient(testServer *httptest.Server) (*rest.RESTClient, error) {
+	return rest.RESTClientFor(&rest.Config{
+		Host: testServer.URL,
+		ContentConfig: rest.ContentConfig{
+			GroupVersion:         &v1.SchemeGroupVersion,
+			NegotiatedSerializer: scheme.Codecs.WithoutConversion(),
+		},
+		Username: "user",
+		Password: "pass",
+	})
 }

@@ -49,6 +49,39 @@ linters:
 linters-settings:
   decorder:
     disable-init-func-first-check: false
+  depguard:
+    # Rules to apply.
+    #
+    # Variables:
+    # - File Variables
+    #   you can still use and exclamation mark ! in front of a variable to say not to use it.
+    #   Example !$test will match any file that is not a go test file.
+    #
+    #   `$all` - matches all go files
+    #   `$test` - matches all go test files
+    #
+    # - Package Variables
+    #
+    #  `$gostd` - matches all of go's standard library (Pulled from `GOROOT`)
+    #
+    # Default: Only allow $gostd in all files.
+    rules:
+      # Name of a rule.
+      main:
+        # List of file globs that will match this list of settings to compare against.
+        # Default: $all
+        files: []
+        # List of allowed packages.
+        allow:
+          - $gostd
+          - github.com/itchyny/gojq
+          - github.com/omissis
+          - github.com/spf13/cobra
+          - github.com/spf13/pflag
+          - github.com/spf13/viper
+          - k8s.io
+        # Packages that are not allowed where the value is a suggestion.
+        deny: []
   errcheck:
     check-type-assertions: true
     check-blank: true
@@ -430,7 +463,6 @@ linters-settings:
     ignore-names:
       - err
     ignore-decls:
-      - c echo.Context
       - t testing.T
       - e error
       - i int
@@ -473,6 +505,9 @@ issues:
     - path: main\.go
       linters:
         - gochecknoglobals
+    - path: internal/app/container.go
+      linters:
+        - gomnd
 
   # Independently of option `exclude` we use default exclude patterns,
   # it can be disabled by this option.

@@ -41,9 +41,11 @@ func (jq *JqResponseBodyTransformer) Run(body []byte, opts map[string]any) ([]by
 		if !ok {
 			break
 		}
+
 		if err, ok := v.(error); ok {
 			return nil, err
 		}
+
 		vv, err := json.Marshal(v)
 		if err != nil {
 			return nil, err

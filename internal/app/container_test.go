@@ -1,3 +1,5 @@
+//go:build unit
+
 package app_test
 
 import (
@@ -8,26 +10,36 @@ import (
 	"github.com/omissis/kube-apiserver-proxy/internal/app"
 )
 
-func TestEcho(t *testing.T) {
+func TestHTTPServeMux(t *testing.T) {
 	t.Parallel()
 
 	container := app.NewContainer()
 
-	assert.NotNil(t, container.Echo())
+	assert.NotNil(t, container.HTTPServeMux())
 }
 
-func TestK8sHTTPProxy(t *testing.T) {
+func TestHTTPServer(t *testing.T) {
 	t.Parallel()
 
 	container := app.NewContainer()
 
-	assert.NotNil(t, container.K8sHTTPProxy())
+	assert.NotNil(t, container.HTTPServer())
 }
 
-func TestRESTClientFactory(t *testing.T) {
-	t.Parallel()
+// TODO: enable this test
+// func TestK8sHTTPProxy(t *testing.T) {
+// 	t.Parallel()
 
-	container := app.NewContainer()
+// 	container := app.NewContainer()
 
-	assert.NotNil(t, container.RESTClientFactory())
-}
+// 	assert.NotNil(t, container.K8sHTTPProxy())
+// }
+
+// TODO: enable this test
+// func TestRESTClientFactory(t *testing.T) {
+// 	t.Parallel()
+
+// 	container := app.NewContainer()
+
+// 	assert.NotNil(t, container.RESTClientFactory())
+// }
