@@ -71,11 +71,17 @@ func (k *DefaultRESTClientFactory) Request(r http.Request) (*rest.Request, error
 		return nil, fmt.Errorf("cannot create rest client: %w", err)
 	}
 
-	return rest.NewRequest(rc).
-			Verb(r.Method).
-			RequestURI(r.URL.Path).
-			Body(r.Body),
-		nil
+	uri := r.URL.Path
+	if r.URL.RawQuery != "" {
+		uri += "?" + r.URL.RawQuery
+	}
+
+	req := rest.NewRequest(rc).
+		Verb(r.Method).
+		RequestURI(uri).
+		Body(r.Body)
+
+	return req, nil
 }
 
 func (k *DefaultRESTClientFactory) newRESTClient(config *rest.Config) (*rest.RESTClient, error) {

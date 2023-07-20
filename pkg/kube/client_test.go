@@ -19,23 +19,6 @@ import (
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 )
 
-func testServerEnv(t *testing.T, groupVersion schema.GroupVersion) (*httptest.Server, *utiltesting.FakeHandler, *metav1.Status) {
-	status := &metav1.Status{
-		TypeMeta: metav1.TypeMeta{APIVersion: "v1", Kind: "Status"},
-		Status:   "Success",
-	}
-
-	expectedBody, _ := runtime.Encode(scheme.Codecs.LegacyCodec(groupVersion), status)
-
-	fakeHandler := utiltesting.FakeHandler{
-		StatusCode:   200,
-		ResponseBody: string(expectedBody),
-		T:            t,
-	}
-
-	return httptest.NewServer(&fakeHandler), &fakeHandler, status
-}
-
 func TestNewRESTClientFactory(t *testing.T) {
 	t.Parallel()
 
@@ -130,6 +113,7 @@ func TestNewRESTClientFactory_Request(t *testing.T) {
 		desc       string
 		group      string
 		version    string
+		url        string
 		want       string
 		wantErr    bool
 		wantErrMsg string
@@ -138,7 +122,17 @@ func TestNewRESTClientFactory_Request(t *testing.T) {
 			desc:       "apps group",
 			group:      "apps",
 			version:    "v1",
+			url:        "https://api.kube-apiserver-proxy.dev/api/v1/pods",
 			want:       "/api/v1/pods",
+			wantErr:    false,
+			wantErrMsg: "",
+		},
+		{
+			desc:       "apps group with query params",
+			group:      "apps",
+			version:    "v1",
+			url:        "https://api.kube-apiserver-proxy.dev/api/v1/pods?limit=1&offset=0",
+			want:       "/api/v1/pods?limit=1&offset=0",
 			wantErr:    false,
 			wantErrMsg: "",
 		},
@@ -167,7 +161,7 @@ func TestNewRESTClientFactory_Request(t *testing.T) {
 
 			f := kube.NewDefaultRESTClientFactory(cfMock, nil, "")
 
-			req, err := http.NewRequest("GET", "https://api.kube-apiserver-proxy.dev/api/v1/pods", nil)
+			req, err := http.NewRequest("GET", tC.url, nil)
 			if err != nil {
 				t.Fatalf("failed to create request: %v", err)
 			}
@@ -192,4 +186,21 @@ func TestNewRESTClientFactory_Request(t *testing.T) {
 			}
 		})
 	}
+}
+
+func testServerEnv(t *testing.T, groupVersion schema.GroupVersion) (*httptest.Server, *utiltesting.FakeHandler, *metav1.Status) {
+	status := &metav1.Status{
+		TypeMeta: metav1.TypeMeta{APIVersion: "v1", Kind: "Status"},
+		Status:   "Success",
+	}
+
+	expectedBody, _ := runtime.Encode(scheme.Codecs.LegacyCodec(groupVersion), status)
+
+	fakeHandler := utiltesting.FakeHandler{
+		StatusCode:   200,
+		ResponseBody: string(expectedBody),
+		T:            t,
+	}
+
+	return httptest.NewServer(&fakeHandler), &fakeHandler, status
 }
