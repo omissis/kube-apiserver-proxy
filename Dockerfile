@@ -1,4 +1,4 @@
-FROM golang:1.20.3-alpine3.17 AS dev
+FROM golang:1.20.6-alpine3.17 AS dev
 
 ENV APP_VERSION ${APP_VERSION:-dev}
 ENV GOOS=linux
