@@ -30,6 +30,12 @@ func (h *HTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if w == nil {
+		log.Printf("error: no response writer was passed\n")
+
+		return
+	}
+
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -43,6 +49,14 @@ func (h *HTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // This method is useful when you want to integrate the handler with a different http server, and it helps
 // to avoid the log.Printf in ServeHTTP, leaving the responsibility of the error handling to the caller.
 func (h *HTTP) DoServeHTTP(ctx context.Context, w http.ResponseWriter, r http.Request) error {
+	if ctx == nil {
+		return fmt.Errorf("context is nil")
+	}
+
+	if w == nil {
+		return fmt.Errorf("response writer is nil")
+	}
+
 	req, err := h.restClientFactory.Request(r)
 	if err != nil {
 		return fmt.Errorf("cannot create rest client: %w", err)
