@@ -86,6 +86,7 @@ func corsMethod(conf CORSConfig) string {
 	return strings.Join(methods, ", ")
 }
 
+//nolint:cyclop // leave this alone
 func corsOrigin(conf CORSConfig, req *http.Request) string {
 	if req == nil {
 		return ""

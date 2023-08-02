@@ -6,8 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	kaspHttp "github.com/omissis/kube-apiserver-proxy/pkg/http"
 	"github.com/stretchr/testify/assert"
+
+	kaspHttp "github.com/omissis/kube-apiserver-proxy/pkg/http"
 )
 
 func TestCORSMiddleware(t *testing.T) {
@@ -23,25 +24,28 @@ func TestCORSMiddleware(t *testing.T) {
 		credentials     string
 		wantCredentials string
 	}{
-		// {
-		// 	desc: "default config",
-		// 	conf: kaspHttp.CORSConfig{},
-		//  origin: "*",
-		//  methods: []string{"*"},
-		//  credentials: "false",
-		// },
-		// {
-		// 	desc: "multiple origins",
-		// 	conf: kaspHttp.CORSConfig{
-		// 		AllowOrigins: []string{"https://api.kube-apiserver-proxy.dev", "https://api.kube-apiserver-proxy.test"},
-		// 	},
-		// 	origin:          "https://api.kube-apiserver-proxy.dev",
-		// 	wantOrigin:      "https://api.kube-apiserver-proxy.dev",
-		// 	methods:         "*",
-		// 	wantMethods:     "*",
-		// 	credentials:     "false",
-		// 	wantCredentials: "false",
-		// },
+		{
+			desc:            "default config",
+			conf:            kaspHttp.CORSConfig{},
+			origin:          "*",
+			wantOrigin:      "*",
+			methods:         "*",
+			wantMethods:     "*",
+			credentials:     "false",
+			wantCredentials: "false",
+		},
+		{
+			desc: "multiple origins",
+			conf: kaspHttp.CORSConfig{
+				AllowOrigins: []string{"https://api.kube-apiserver-proxy.dev", "https://api.kube-apiserver-proxy.test"},
+			},
+			origin:          "https://api.kube-apiserver-proxy.dev",
+			wantOrigin:      "https://api.kube-apiserver-proxy.dev",
+			methods:         "*",
+			wantMethods:     "*",
+			credentials:     "false",
+			wantCredentials: "false",
+		},
 		{
 			desc: "origin with authentication",
 			conf: kaspHttp.CORSConfig{
@@ -54,13 +58,18 @@ func TestCORSMiddleware(t *testing.T) {
 			credentials:     "false",
 			wantCredentials: "false",
 		},
-		// {
-		// 	desc: "multiple methods",
-		// 	conf: kaspHttp.CORSConfig{
-		// 		AllowMethods: []string{"GET", "POST"},
-		// 	},
-		// 	methods: "GET, POST",
-		// },
+		{
+			desc: "multiple methods",
+			conf: kaspHttp.CORSConfig{
+				AllowMethods: []string{http.MethodGet, "POST"},
+			},
+			origin:          "*",
+			wantOrigin:      "*",
+			methods:         "GET, POST",
+			wantMethods:     "GET, POST",
+			credentials:     "false",
+			wantCredentials: "false",
+		},
 	}
 	for _, tC := range testCases {
 		tC := tC
@@ -77,7 +86,7 @@ func TestCORSMiddleware(t *testing.T) {
 
 			url := "https://api.kube-apiserver-proxy.dev/api/v1/namespaces/kube-system/pods"
 
-			req := httptest.NewRequest("GET", url, nil)
+			req := httptest.NewRequest(http.MethodGet, url, nil)
 			req.Header.Set("Origin", tC.origin)
 
 			w := httptest.NewRecorder()
@@ -85,10 +94,13 @@ func TestCORSMiddleware(t *testing.T) {
 			handler.ServeHTTP(w, req)
 
 			resp := w.Result()
+
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				t.Fatal(err)
 			}
+
+			defer resp.Body.Close()
 
 			assert.Equal(t, "OK", string(body))
 			assert.Equal(t, http.StatusOK, resp.StatusCode)

@@ -2,12 +2,24 @@ package proxy
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
+)
+
+var (
+	ErrCannotApplyResponseTransformers = errors.New("cannot apply response transformers")
+	ErrCannotCreateRESTClient          = errors.New("cannot create rest client")
+	ErrCannotGetProxiedResponseBody    = errors.New("cannot get response of proxied response body")
+	ErrCannotParseRequestURI           = errors.New("cannot parse request URI")
+	ErrCannotTransformResponseBody     = errors.New("cannot transform response body")
+	ErrCannotWriteResponseBody         = errors.New("cannot write body to the response")
+	ErrContextIsNil                    = errors.New("context is nil")
+	ErrResponseWriterIsNil             = errors.New("response writer is nil")
 )
 
 func NewHTTP(restClientFactory kube.RESTClientFactory, responseTransformers []ResponseBodyTransformer) *HTTP {
@@ -50,16 +62,16 @@ func (h *HTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // to avoid the log.Printf in ServeHTTP, leaving the responsibility of the error handling to the caller.
 func (h *HTTP) DoServeHTTP(ctx context.Context, w http.ResponseWriter, r http.Request) error {
 	if ctx == nil {
-		return fmt.Errorf("context is nil")
+		return ErrContextIsNil
 	}
 
 	if w == nil {
-		return fmt.Errorf("response writer is nil")
+		return ErrResponseWriterIsNil
 	}
 
 	req, err := h.restClientFactory.Request(r)
 	if err != nil {
-		return fmt.Errorf("cannot create rest client: %w", err)
+		return fmt.Errorf("%w: %w", ErrCannotCreateRESTClient, err)
 	}
 
 	cctx, cancel := context.WithCancel(ctx)
@@ -69,12 +81,12 @@ func (h *HTTP) DoServeHTTP(ctx context.Context, w http.ResponseWriter, r http.Re
 
 	body, err := res.Raw()
 	if err != nil {
-		return fmt.Errorf("cannot get response of proxied response body: %w", err)
+		return fmt.Errorf("%w: %w", ErrCannotGetProxiedResponseBody, err)
 	}
 
 	body, err = h.applyTransformers(r, body)
 	if err != nil {
-		return fmt.Errorf("cannot apply response transformers: %w", err)
+		return fmt.Errorf("%w: %w", ErrCannotApplyResponseTransformers, err)
 	}
 
 	sc := 0
@@ -83,7 +95,7 @@ func (h *HTTP) DoServeHTTP(ctx context.Context, w http.ResponseWriter, r http.Re
 
 	_, err = w.Write(body)
 	if err != nil {
-		return fmt.Errorf("cannot write body to the response: %w", err)
+		return fmt.Errorf("%w: %w", ErrCannotWriteResponseBody, err)
 	}
 
 	return nil
@@ -92,7 +104,7 @@ func (h *HTTP) DoServeHTTP(ctx context.Context, w http.ResponseWriter, r http.Re
 func (h *HTTP) applyTransformers(r http.Request, body []byte) ([]byte, error) {
 	u, err := url.Parse(r.URL.String())
 	if err != nil {
-		return body, fmt.Errorf("cannot parse request uri: %w", err)
+		return body, fmt.Errorf("%w: %w", ErrCannotParseRequestURI, err)
 	}
 
 	for _, rt := range h.responseTransformers {
@@ -101,7 +113,7 @@ func (h *HTTP) applyTransformers(r http.Request, body []byte) ([]byte, error) {
 		if src != "" {
 			body, err = rt.Run(body, map[string]any{"src": src})
 			if err != nil {
-				return body, fmt.Errorf("cannot transform response body: %w", err)
+				return body, fmt.Errorf("%w: %w", ErrCannotTransformResponseBody, err)
 			}
 
 			return body, nil

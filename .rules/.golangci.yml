@@ -76,6 +76,7 @@ linters-settings:
           - $gostd
           - github.com/itchyny/gojq
           - github.com/omissis
+          - github.com/stretchr/testify/assert
           - github.com/spf13/cobra
           - github.com/spf13/pflag
           - github.com/spf13/viper
