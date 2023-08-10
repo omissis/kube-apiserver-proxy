@@ -79,6 +79,7 @@ func (k *DefaultRESTClientFactory) Request(r http.Request) (*rest.Request, error
 	req := rest.NewRequest(rc).
 		Verb(r.Method).
 		RequestURI(uri).
+		SetHeader("Content-Type", r.Header.Get("Content-Type")).
 		Body(r.Body)
 
 	return req, nil
