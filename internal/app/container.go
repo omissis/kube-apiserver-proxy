@@ -7,7 +7,9 @@ import (
 
 	"k8s.io/client-go/rest"
 
+	"github.com/omissis/kube-apiserver-proxy/pkg/config"
 	httpx "github.com/omissis/kube-apiserver-proxy/pkg/http"
+	"github.com/omissis/kube-apiserver-proxy/pkg/http/middleware"
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube"
 	"github.com/omissis/kube-apiserver-proxy/pkg/kube/proxy"
 )
@@ -26,6 +28,7 @@ func NewDefaultParameters() Parameters {
 		APIServerHost:     "0.0.0.0",
 		APIServerPort:     apiServerPort,
 		APIAllowedOrigins: []string{"http://localhost:3000", "http://kasp.dev"},
+		Config:            config.Config{},
 	}
 }
 
@@ -34,6 +37,7 @@ type Parameters struct {
 	APIServerHost     string
 	APIServerPort     uint16
 	APIAllowedOrigins []string
+	Config            config.Config
 	KubeconfigPath    string
 }
 
@@ -63,10 +67,16 @@ func (c *Container) HTTPServeMux() *httpx.ServeMux {
 
 		if len(c.Parameters.APIAllowedOrigins) > 0 {
 			c.httpServeMux.Use(
-				httpx.CORSMuxMiddleware(httpx.CORSConfig{
+				middleware.CORSMux(middleware.CORSConfig{
 					AllowOrigins: c.Parameters.APIAllowedOrigins,
 				}),
 			)
+		}
+
+		if c.Parameters.Config.Middlewares.BodyFilter.Enabled {
+			c.httpServeMux.Use(middleware.BodyFilterMux(
+				c.Parameters.Config.Middlewares.BodyFilter.Config,
+			))
 		}
 	}
 

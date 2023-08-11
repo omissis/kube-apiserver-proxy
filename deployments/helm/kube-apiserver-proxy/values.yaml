@@ -75,6 +75,18 @@ affinity: {}
 clusterRole:
   rules: []
 
+app:
+  configFile:
+    middlewares:
+      bodyFilter:
+        enabled: false
+        config:
+          - methods: ["PATCH", "POST"]
+            paths:
+              - path: "/api/v1/namespaces/*/pods/*"
+                type: "glob" # optional
+            filter: "{\"metadata\":{\"labels\":{\"app\": \"*\"}}}"
+
 queries:
   - name: listPodsinNamespace
     method: GET

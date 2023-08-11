@@ -1,4 +1,4 @@
-package http_test
+package middleware_test
 
 import (
 	"io"
@@ -8,15 +8,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	kaspHttp "github.com/omissis/kube-apiserver-proxy/pkg/http"
+	"github.com/omissis/kube-apiserver-proxy/pkg/http/middleware"
 )
 
-func TestCORSMiddleware(t *testing.T) {
+func TestCORS(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
 		desc            string
-		conf            kaspHttp.CORSConfig
+		conf            middleware.CORSConfig
 		origin          string
 		wantOrigin      string
 		methods         string
@@ -26,7 +26,7 @@ func TestCORSMiddleware(t *testing.T) {
 	}{
 		{
 			desc:            "default config",
-			conf:            kaspHttp.CORSConfig{},
+			conf:            middleware.CORSConfig{},
 			origin:          "*",
 			wantOrigin:      "*",
 			methods:         "*",
@@ -36,7 +36,7 @@ func TestCORSMiddleware(t *testing.T) {
 		},
 		{
 			desc: "multiple origins",
-			conf: kaspHttp.CORSConfig{
+			conf: middleware.CORSConfig{
 				AllowOrigins: []string{"https://api.kube-apiserver-proxy.dev", "https://api.kube-apiserver-proxy.test"},
 			},
 			origin:          "https://api.kube-apiserver-proxy.dev",
@@ -48,7 +48,7 @@ func TestCORSMiddleware(t *testing.T) {
 		},
 		{
 			desc: "origin with authentication",
-			conf: kaspHttp.CORSConfig{
+			conf: middleware.CORSConfig{
 				AllowOrigins: []string{"https://api.kube-apiserver-proxy.dev", "https://api.kube-apiserver-proxy.test"},
 			},
 			origin:          "https://foo:bar@api.kube-apiserver-proxy.dev",
@@ -60,7 +60,7 @@ func TestCORSMiddleware(t *testing.T) {
 		},
 		{
 			desc: "multiple methods",
-			conf: kaspHttp.CORSConfig{
+			conf: middleware.CORSConfig{
 				AllowMethods: []string{http.MethodGet, "POST"},
 			},
 			origin:          "*",
@@ -77,7 +77,7 @@ func TestCORSMiddleware(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			handler := kaspHttp.CORSMiddleware(
+			handler := middleware.CORS(
 				http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 					io.WriteString(w, "OK")
 				}),

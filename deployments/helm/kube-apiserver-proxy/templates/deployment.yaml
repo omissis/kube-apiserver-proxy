@@ -33,6 +33,13 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CONFIG
+              value: /etc/kube-apiserver-proxy/config.yaml
+          volumeMounts:
+            - mountPath: /etc/kube-apiserver-proxy/config.yaml
+              name: config-file
+              subPath: config.yaml
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -51,6 +58,10 @@ spec:
           #     periodSeconds: 15
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config-file
+          configMap:
+            name: {{ include "kube-apiserver-proxy.fullname" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
