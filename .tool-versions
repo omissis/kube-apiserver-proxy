@@ -1,6 +1,6 @@
 ctlptl 0.8.20
 golang 1.21.0
-golangci-lint 1.54.0
+golangci-lint 1.54.1
 goreleaser 1.19.2
 helm 3.12.3
 jq 1.6
