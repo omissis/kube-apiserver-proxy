@@ -80,13 +80,12 @@ app:
     middlewares:
       bodyFilter:
         enabled: false
-        config:
-          - methods: ["PATCH", "POST"]
-            paths:
-              - path: "/api/v1/namespaces/*/pods/*"
-                type: "glob" # optional
-            filter: "{\"metadata\":{\"labels\":{\"app\": \"*\"}}}"
-
+#        config:
+#          - methods: ["PATCH"]
+#           paths:
+#              - path: "/api/v1/namespaces/*/pods/*"
+#                type: "glob" # optional
+#            filter: "{\"metadata\":{\"labels\":{\"example\": \"*\"}}}"
 queries:
   - name: listPodsinNamespace
     method: GET
