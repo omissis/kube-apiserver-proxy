@@ -96,9 +96,13 @@ func MatchConfig(r *http.Request, conf []config.BodyFilterConfig) (config.BodyFi
 }
 
 func FillTargetFromBody(body, target map[string]any) error {
+	var err error
+
 	for k, v := range target {
 		if _, ok := body[k]; !ok {
-			return fmt.Errorf("%w: key %s not found in base map", ErrDuringBodyFilter, k)
+			err = fmt.Errorf("%w: key %s not found in base map", ErrDuringBodyFilter, k)
+
+			break
 		}
 
 		if v == "*" {
@@ -111,7 +115,9 @@ func FillTargetFromBody(body, target map[string]any) error {
 		if ok {
 			bodyKMap, bOk := body[k].(map[string]any)
 			if !bOk {
-				return fmt.Errorf("%w: key %s is not a map", ErrDuringBodyFilter, k)
+				err = fmt.Errorf("%w: key %s is not a map", ErrDuringBodyFilter, k)
+
+				break
 			}
 
 			return FillTargetFromBody(bodyKMap, targetKMap)
@@ -121,14 +127,16 @@ func FillTargetFromBody(body, target map[string]any) error {
 		if ok {
 			bodyKArr, ok := body[k].([]any)
 			if !ok {
-				return fmt.Errorf("%w: key %s is not an array", ErrDuringBodyFilter, k)
+				err = fmt.Errorf("%w: key %s is not an array", ErrDuringBodyFilter, k)
+
+				break
 			}
 
 			return fillTargetArrayHelper(bodyKArr, targetKArr, k)
 		}
 	}
 
-	return nil
+	return err
 }
 
 func fillTargetArrayHelper(body, target []any, key string) error {
