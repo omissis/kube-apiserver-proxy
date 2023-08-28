@@ -66,20 +66,24 @@ func corsOrigin(conf CORSConfig, req *http.Request) string {
 
 	for _, o := range origins {
 		if o == origin {
-			return origin
+			break
 		}
 
 		v, err := url.Parse(o)
 		if err != nil {
-			return ""
+			origin = ""
+
+			break
 		}
 
 		if v.Scheme == u.Scheme && v.Host == u.Host {
-			return fmt.Sprintf("%s://%s", v.Scheme, v.Host)
+			origin = fmt.Sprintf("%s://%s", v.Scheme, v.Host)
+
+			break
 		}
 	}
 
-	return ""
+	return origin
 }
 
 func corsHeaders(conf CORSConfig) string {
