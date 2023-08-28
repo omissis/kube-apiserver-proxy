@@ -11,7 +11,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/omissis/kube-apiserver-proxy/pkg/config"
-	http2 "github.com/omissis/kube-apiserver-proxy/pkg/http"
+	kaspHttp "github.com/omissis/kube-apiserver-proxy/pkg/http"
 )
 
 var ErrDuringBodyFilter = fmt.Errorf("error during body filter")
@@ -32,7 +32,9 @@ func BodyFilter(next http.Handler, conf []config.BodyFilterConfig) http2.Middlew
 		}
 
 		if r.Body == nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+			slog.Warning("empty request body")
+
+			http.Error(w, "Empty request body", http.StatusBadRequest)
 
 			return
 		}
@@ -43,26 +45,34 @@ func BodyFilter(next http.Handler, conf []config.BodyFilterConfig) http2.Middlew
 		filterTarget := map[string]any{}
 
 		if err := bodyDecoder.Decode(&filteredBody); err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+			slog.Error("cannot decode body", "error", err, "body", r.Body)
+		
+			http.Error(w, "Decoding Error", http.StatusBadRequest)
 
 			return
 		}
 
 		if err := json.Unmarshal([]byte(c.Filter), &filterTarget); err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+			slog.Error("cannot unmarshal filter config", "error", err, "filterConfig", c.Filter)
+
+			http.Error(w, "Unmarshalling Error", http.StatusInternalServerError)
 
 			return
 		}
 
 		if err := FillTargetFromBody(filteredBody, filterTarget); err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+			slog.Error("cannot create filtered body", "error", err, "filteredBody", filteredBody, "filterTarget", filterTarget)
+
+			http.Error(w, "Mapping Error", http.StatusInternalServerError)
 
 			return
 		}
 
 		bodyFromTarget, err := json.Marshal(filterTarget)
 		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			slog.Error("cannot marshal filtered body", "error", err, "filterTarget", filterTarget)
+
+			http.Error(w, "Marshalling Error", http.StatusInternalServerError)
 
 			return
 		}

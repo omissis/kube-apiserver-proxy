@@ -21,13 +21,7 @@ app:
   configFile:
     middlewares:
       bodyFilter:
-        enabled: true
-        config:
-          - methods: ["PATCH", "POST"]
-            paths:
-              - path: "/api/v1/namespaces/*/pods/*"
-                type: "glob"
-            filter: "{\"metadata\":{\"labels\":{\"app\": \"*\"}}}"
+        enabled: false
 
 clusterRole:
   rules:
