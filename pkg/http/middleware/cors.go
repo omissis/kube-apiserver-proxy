@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	http2 "github.com/omissis/kube-apiserver-proxy/pkg/http"
+	kaspHttp "github.com/omissis/kube-apiserver-proxy/pkg/http"
 )
 
 type CORSConfig struct {
