@@ -112,6 +112,45 @@ func TestBodyFilter(t *testing.T) {
 			body:           `{"metadata":{"name":"foo"}}`,
 			wantStatusCode: http.StatusBadRequest,
 		},
+		{
+			desc: "match method, match path, array -- success",
+			conf: []config.BodyFilterConfig{
+				{
+					Methods: []string{"PATCH"},
+					Paths: []config.BodyFilterConfigPaths{
+						{
+							Path: "/api/v1/namespaces/default/test",
+							Type: "glob",
+						},
+					},
+					Filter: `{"metadata":{"name":"*", "tests": [{"foo": "*"}, {"foo": "*"}]}}`,
+				},
+			},
+			httpMethod:     "PATCH",
+			path:           "/api/v1/namespaces/default/test",
+			body:           `{"metadata":{"name":"foo", "tests": [{"foo": "bar"}, {"foo": "baz"}]}}`,
+			wantBody:       `{"metadata":{"name":"foo","tests":[{"foo":"bar"},{"foo":"baz"}]}}`,
+			wantStatusCode: http.StatusOK,
+		},
+		{
+			desc: "match method, match path, array -- failure",
+			conf: []config.BodyFilterConfig{
+				{
+					Methods: []string{"PATCH"},
+					Paths: []config.BodyFilterConfigPaths{
+						{
+							Path: "/api/v1/namespaces/default/test",
+							Type: "glob",
+						},
+					},
+					Filter: `{"metadata":{"name":"*", "tests": [{"foo": "*"}, {"foo": "*"}]}}`,
+				},
+			},
+			httpMethod:     "PATCH",
+			path:           "/api/v1/namespaces/default/test",
+			body:           `{"metadata":{"name":"foo", "tests": [{"foo": "bar"}]}}`,
+			wantStatusCode: http.StatusBadRequest,
+		},
 	}
 
 	for _, tC := range testCases {
@@ -271,7 +310,7 @@ func TestMatchConfig(t *testing.T) {
 	}
 }
 
-func TestFillTargetFromBody(t *testing.T) {
+func TestFilter(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -345,6 +384,140 @@ func TestFillTargetFromBody(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			desc: "fill target from body array - success",
+			body: map[string]any{
+				"metadata": map[string]any{
+					"test": []any{
+						map[string]any{
+							"foo": "bar",
+						},
+						map[string]any{
+							"foo": "baz",
+						},
+						map[string]any{
+							"foo": "qux",
+						},
+					},
+				},
+			},
+			target: map[string]any{
+				"metadata": map[string]any{
+					"test": []any{
+						map[string]any{
+							"foo": "*",
+						},
+						map[string]any{
+							"foo": "*",
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "fill target from body array mismatch - failure",
+			body: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						map[string]any{
+							"foo": "bar",
+						},
+					},
+				},
+			},
+			target: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						map[string]any{
+							"foo": "*",
+						},
+						map[string]any{
+							"foo": "*",
+						},
+					},
+				},
+			},
+			wantErr: true,
+			err:     "error during body filter: key tests target array is bigger than body array",
+		},
+		{
+			desc: "fill target from body array mismatch keys - failure",
+			body: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						map[string]any{
+							"fooz": "bar",
+						},
+					},
+				},
+			},
+			target: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						map[string]any{
+							"foo": "*",
+						},
+					},
+				},
+			},
+			wantErr: true,
+			err:     "error during body filter: key foo not found in base map",
+		},
+		{
+			desc: "fill target from body nested array - success",
+			body: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						[]any{
+							map[string]any{
+								"foo": "bar",
+							},
+						},
+					},
+				},
+			},
+			target: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						[]any{
+							map[string]any{
+								"foo": "*",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "fill target from body nested array - failure",
+			body: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						[]any{
+							map[string]any{
+								"foo": "bar",
+							},
+						},
+					},
+				},
+			},
+			target: map[string]any{
+				"metadata": map[string]any{
+					"tests": []any{
+						[]any{
+							map[string]any{
+								"foo": "*",
+							},
+							map[string]any{
+								"foo": "*",
+							},
+						},
+					},
+				},
+			},
+			wantErr: true,
+			err:     "error during body filter: key tests target array is bigger than body array",
+		},
 	}
 
 	for _, tC := range testCases {
@@ -353,7 +526,7 @@ func TestFillTargetFromBody(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			err := middleware.FillTargetFromBody(tC.body, tC.target)
+			err := middleware.Filter(tC.body, tC.target)
 
 			assert.Equal(t, tC.wantErr, err != nil)
 
