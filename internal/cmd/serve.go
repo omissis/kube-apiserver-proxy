@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 	"k8s.io/client-go/util/homedir"
@@ -40,11 +41,17 @@ func NewServeCommand(ctr *app.Container) *cobra.Command {
 
 			config, err := os.ReadFile(flags.Config)
 			if err != nil && !errors.Is(err, os.ErrNotExist) {
-				return err
+				return fmt.Errorf("config read failed: %w", err)
 			}
 
 			if err := yaml.Unmarshal(config, &cfg); err != nil {
-				return err
+				return fmt.Errorf("config unmarshal failed: %w", err)
+			}
+
+			validate := validator.New()
+
+			if err := validate.Struct(cfg); err != nil {
+				return fmt.Errorf("config validation failed: %w", err)
 			}
 
 			ctr.KubeconfigPath = flags.Kubeconfig

@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"strings"
 
+	"golang.org/x/exp/slog"
+
 	kaspHttp "github.com/omissis/kube-apiserver-proxy/pkg/http"
 )
 
@@ -16,14 +18,22 @@ type CORSConfig struct {
 	AllowCredentials bool
 }
 
-func CORSMux(conf CORSConfig) http2.MuxMiddleware {
+func CORSMux(conf CORSConfig) kaspHttp.MuxMiddleware {
 	return func(next http.Handler) http.Handler {
 		return CORS(next, conf)
 	}
 }
 
-func CORS(next http.Handler, conf CORSConfig) http2.Middleware {
+func CORS(next http.Handler, conf CORSConfig) kaspHttp.Middleware {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r == nil {
+			slog.Warn("empty request")
+
+			http.Error(w, "Empty request", http.StatusBadRequest)
+
+			return
+		}
+
 		w.Header().Set("Access-Control-Allow-Methods", corsMethod(conf))
 		w.Header().Set("Access-Control-Allow-Origin", corsOrigin(conf, r))
 		w.Header().Set("Access-Control-Allow-Headers", corsHeaders(conf))
