@@ -105,13 +105,9 @@ func MatchConfig(r *http.Request, conf []config.BodyFilterConfig) (config.BodyFi
 }
 
 func Filter(body, filteredBody map[string]any) error {
-	var err error
-
 	for k, v := range filteredBody {
 		if _, ok := body[k]; !ok {
-			err = fmt.Errorf("%w: key %s not found in base map", ErrDuringBodyFilter, k)
-
-			break
+			return fmt.Errorf("%w: key %s not found in base map", ErrDuringBodyFilter, k)
 		}
 
 		if v == "*" {
@@ -124,14 +120,11 @@ func Filter(body, filteredBody map[string]any) error {
 		if ok {
 			bodyKMap, bOk := body[k].(map[string]any)
 			if !bOk {
-				err = fmt.Errorf("%w: key %s is not a map", ErrDuringBodyFilter, k)
-
-				break
+				return fmt.Errorf("%w: key %s is not a map", ErrDuringBodyFilter, k)
 			}
 
-			err = Filter(bodyKMap, targetKMap)
-			if err != nil {
-				break
+			if err := Filter(bodyKMap, targetKMap); err != nil {
+				return err
 			}
 
 			continue
@@ -141,14 +134,11 @@ func Filter(body, filteredBody map[string]any) error {
 		if ok {
 			bodyKArr, ok := body[k].([]any)
 			if !ok {
-				err = fmt.Errorf("%w: key %s is not an array", ErrDuringBodyFilter, k)
-
-				break
+				return fmt.Errorf("%w: key %s is not an array", ErrDuringBodyFilter, k)
 			}
 
-			err = filterArrayHelper(bodyKArr, targetKArr, k)
-			if err != nil {
-				break
+			if err := filterArrayHelper(bodyKArr, targetKArr, k); err != nil {
+				return err
 			}
 
 			continue
@@ -157,12 +147,10 @@ func Filter(body, filteredBody map[string]any) error {
 		slog.Debug("key is not a map or an array, skipped", "key", k)
 	}
 
-	return err
+	return nil
 }
 
 func filterArrayHelper(body, target []any, key string) error {
-	var err error
-
 	if len(target) > len(body) {
 		return fmt.Errorf("%w: key %s target array is bigger than body array", ErrDuringBodyFilter, key)
 	}
@@ -172,14 +160,11 @@ func filterArrayHelper(body, target []any, key string) error {
 		if ok {
 			bodyIMap, bOk := body[i].(map[string]any)
 			if !bOk {
-				err = fmt.Errorf("%w: key %s is not an array of maps", ErrDuringBodyFilter, key)
-
-				break
+				return fmt.Errorf("%w: key %s is not an array of maps", ErrDuringBodyFilter, key)
 			}
 
-			err = Filter(bodyIMap, targetIMap)
-			if err != nil {
-				break
+			if err := Filter(bodyIMap, targetIMap); err != nil {
+				return err
 			}
 
 			continue
@@ -189,14 +174,11 @@ func filterArrayHelper(body, target []any, key string) error {
 		if ok {
 			bodyIArr, ok := body[i].([]any)
 			if !ok {
-				err = fmt.Errorf("%w: key %s is not an array of arrays", ErrDuringBodyFilter, key)
-
-				break
+				return fmt.Errorf("%w: key %s is not an array of arrays", ErrDuringBodyFilter, key)
 			}
 
-			err = filterArrayHelper(bodyIArr, targetIArr, key)
-			if err != nil {
-				break
+			if err := filterArrayHelper(bodyIArr, targetIArr, key); err != nil {
+				return err
 			}
 
 			continue
@@ -205,7 +187,7 @@ func filterArrayHelper(body, target []any, key string) error {
 		slog.Debug("key is not a map or an array, skipped", "key", key)
 	}
 
-	return err
+	return nil
 }
 
 func decodeBody(body io.ReadCloser) (map[string]any, error) {
