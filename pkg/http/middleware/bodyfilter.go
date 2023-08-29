@@ -116,31 +116,26 @@ func Filter(body, filteredBody map[string]any) error {
 			continue
 		}
 
-		targetKMap, ok := filteredBody[k].(map[string]any)
-		if ok {
-			bodyKMap, bOk := body[k].(map[string]any)
-			if !bOk {
-				return fmt.Errorf("%w: key %s is not a map", ErrDuringBodyFilter, k)
-			}
+		match, err := filterHandlerByKey(body, filteredBody, Filter, k)
+		if err != nil {
+			return err
+		}
 
-			if err := Filter(bodyKMap, targetKMap); err != nil {
-				return err
-			}
-
+		if match {
 			continue
 		}
 
-		targetKArr, ok := filteredBody[k].([]any)
-		if ok {
-			bodyKArr, ok := body[k].([]any)
-			if !ok {
-				return fmt.Errorf("%w: key %s is not an array", ErrDuringBodyFilter, k)
-			}
+		match, err = filterHandlerByKey[[]any](
+			body,
+			filteredBody,
+			func(b, f []any) error { return filterArrayHelper(b, f, k) },
+			k,
+		)
+		if err != nil {
+			return err
+		}
 
-			if err := filterArrayHelper(bodyKArr, targetKArr, k); err != nil {
-				return err
-			}
-
+		if match {
 			continue
 		}
 
@@ -150,37 +145,32 @@ func Filter(body, filteredBody map[string]any) error {
 	return nil
 }
 
-func filterArrayHelper(body, target []any, key string) error {
-	if len(target) > len(body) {
-		return fmt.Errorf("%w: key %s target array is bigger than body array", ErrDuringBodyFilter, key)
+func filterArrayHelper(body, filteredBody []any, key string) error {
+	if len(filteredBody) > len(body) {
+		return fmt.Errorf("%w: key %s filteredBody array is bigger than body array", ErrDuringBodyFilter, key)
 	}
 
-	for i := range target {
-		targetIMap, ok := target[i].(map[string]any)
-		if ok {
-			bodyIMap, bOk := body[i].(map[string]any)
-			if !bOk {
-				return fmt.Errorf("%w: key %s is not an array of maps", ErrDuringBodyFilter, key)
-			}
+	for i := range filteredBody {
+		match, err := filterHandlerByIndex(body, filteredBody, Filter, i)
+		if err != nil {
+			return err
+		}
 
-			if err := Filter(bodyIMap, targetIMap); err != nil {
-				return err
-			}
-
+		if match {
 			continue
 		}
 
-		targetIArr, ok := target[i].([]any)
-		if ok {
-			bodyIArr, ok := body[i].([]any)
-			if !ok {
-				return fmt.Errorf("%w: key %s is not an array of arrays", ErrDuringBodyFilter, key)
-			}
+		match, err = filterHandlerByIndex[[]any](
+			body,
+			filteredBody,
+			func(b, f []any) error { return filterArrayHelper(b, f, key) },
+			i,
+		)
+		if err != nil {
+			return err
+		}
 
-			if err := filterArrayHelper(bodyIArr, targetIArr, key); err != nil {
-				return err
-			}
-
+		if match {
 			continue
 		}
 
@@ -219,4 +209,44 @@ func getFilteredBody(body map[string]any, filter string) ([]byte, error) {
 	}
 
 	return bodyFromTarget, nil
+}
+
+func filterHandlerByKey[T any](body, filteredBody map[string]any, f func(T, T) error, k string) (bool, error) {
+	match := false
+
+	targetKMap, ok := filteredBody[k].(T)
+	if ok {
+		bodyKMap, bOk := body[k].(T)
+		if !bOk {
+			return false, fmt.Errorf("%w: key %s type mismatch", ErrDuringBodyFilter, k)
+		}
+
+		if err := f(bodyKMap, targetKMap); err != nil {
+			return false, err
+		}
+
+		match = true
+	}
+
+	return match, nil
+}
+
+func filterHandlerByIndex[T any](body, filteredBody []any, f func(T, T) error, i int) (bool, error) {
+	match := false
+
+	targetKMap, ok := filteredBody[i].(T)
+	if ok {
+		bodyKMap, bOk := body[i].(T)
+		if !bOk {
+			return false, fmt.Errorf("%w: index %d type mismatch", ErrDuringBodyFilter, i)
+		}
+
+		if err := f(bodyKMap, targetKMap); err != nil {
+			return false, err
+		}
+
+		match = true
+	}
+
+	return match, nil
 }
