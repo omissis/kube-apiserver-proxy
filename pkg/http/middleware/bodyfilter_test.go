@@ -438,7 +438,7 @@ func TestFilter(t *testing.T) {
 				},
 			},
 			wantErr: true,
-			err:     "error during body filter: key tests target array is bigger than body array",
+			err:     "error during body filter: key tests filteredBody array is bigger than body array",
 		},
 		{
 			desc: "fill target from body array mismatch keys - failure",
@@ -516,7 +516,7 @@ func TestFilter(t *testing.T) {
 				},
 			},
 			wantErr: true,
-			err:     "error during body filter: key tests target array is bigger than body array",
+			err:     "error during body filter: key tests filteredBody array is bigger than body array",
 		},
 	}
 
