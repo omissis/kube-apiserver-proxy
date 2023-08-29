@@ -125,7 +125,7 @@ func Filter(body, filteredBody map[string]any) error {
 			continue
 		}
 
-		match, err = filterHandlerByKey[[]any](
+		match, err = filterHandlerByKey(
 			body,
 			filteredBody,
 			func(b, f []any) error { return filterArrayHelper(b, f, k) },
@@ -160,7 +160,7 @@ func filterArrayHelper(body, filteredBody []any, key string) error {
 			continue
 		}
 
-		match, err = filterHandlerByIndex[[]any](
+		match, err = filterHandlerByIndex(
 			body,
 			filteredBody,
 			func(b, f []any) error { return filterArrayHelper(b, f, key) },
