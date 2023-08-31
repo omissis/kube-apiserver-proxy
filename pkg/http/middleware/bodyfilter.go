@@ -37,7 +37,7 @@ func BodyFilter(next http.Handler, conf []config.BodyFilterConfig) kaspHttp.Midd
 
 		c, match := MatchConfig(r, conf)
 		if !match {
-			slog.Debug("body filter did not match any request", "config paths", c.Paths, "path", r.URL.Path)
+			slog.Debug("body filter did not match request", "config paths", c.Paths, "path", r.URL.Path)
 
 			next.ServeHTTP(w, r)
 
