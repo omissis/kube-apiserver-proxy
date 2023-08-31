@@ -151,6 +151,46 @@ func TestBodyFilter(t *testing.T) {
 			body:           `{"metadata":{"name":"foo", "tests": [{"foo": "bar"}]}}`,
 			wantStatusCode: http.StatusBadRequest,
 		},
+		{
+			desc: "match method, match path, prefix -- success",
+			conf: []config.BodyFilterConfig{
+				{
+					Methods: []string{"PATCH"},
+					Paths: []config.BodyFilterConfigPaths{
+						{
+							Path: "/api",
+							Type: "prefix",
+						},
+					},
+					Filter: `{"metadata":{"name":"*"}}`,
+				},
+			},
+			httpMethod:     "PATCH",
+			path:           "/api/v1/namespaces/default/pods",
+			body:           `{"metadata":{"name":"foo"}}`,
+			wantBody:       `{"metadata":{"name":"foo"}}`,
+			wantStatusCode: http.StatusOK,
+		},
+		{
+			desc: "match method, not match path, prefix",
+			conf: []config.BodyFilterConfig{
+				{
+					Methods: []string{"PATCH"},
+					Paths: []config.BodyFilterConfigPaths{
+						{
+							Path: "/apo",
+							Type: "prefix",
+						},
+					},
+					Filter: `{"metadata":{"name":"*"}}`,
+				},
+			},
+			httpMethod:     "PATCH",
+			path:           "/api/v1/namespaces/default/pods",
+			body:           `{"metadata":{"name":"foo", "labels": {"app": "bar"}}}`,
+			wantBody:       `{"metadata":{"name":"foo", "labels": {"app": "bar"}}}`,
+			wantStatusCode: http.StatusOK,
+		},
 	}
 
 	for _, tC := range testCases {
@@ -287,6 +327,54 @@ func TestMatchConfig(t *testing.T) {
 				Filter: `{"metadata":{"name":"*"}}`,
 			},
 			matches: true,
+		},
+		{
+			desc: "match method, match path, type prefix -- matches",
+			conf: []config.BodyFilterConfig{
+				{
+					Methods: []string{"PATCH"},
+					Paths: []config.BodyFilterConfigPaths{
+						{
+							Path: "/api",
+							Type: "prefix",
+						},
+					},
+					Filter: `{"metadata":{"name":"*"}}`,
+				},
+			},
+			httpMethod: "PATCH",
+			path:       "/api/v1/namespaces/default/pods",
+			body:       `{"metadata":{"name":"foo"}}`,
+			matchedConfig: config.BodyFilterConfig{
+				Methods: []string{"PATCH"},
+				Paths: []config.BodyFilterConfigPaths{
+					{
+						Path: "/api",
+						Type: "prefix",
+					},
+				},
+				Filter: `{"metadata":{"name":"*"}}`,
+			},
+			matches: true,
+		},
+		{
+			desc: "match method, match path, type prefix -- does not match",
+			conf: []config.BodyFilterConfig{
+				{
+					Methods: []string{"PATCH"},
+					Paths: []config.BodyFilterConfigPaths{
+						{
+							Path: "/apo",
+							Type: "prefix",
+						},
+					},
+					Filter: `{"metadata":{"name":"*"}}`,
+				},
+			},
+			httpMethod: "PATCH",
+			path:       "/api/v1/namespaces/default/pods",
+			body:       `{"metadata":{"name":"foo"}}`,
+			matches:    false,
 		},
 	}
 

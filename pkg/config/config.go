@@ -21,5 +21,5 @@ type BodyFilterConfig struct {
 
 type BodyFilterConfigPaths struct {
 	Path string `yaml:"path"`
-	Type string `validate:"oneof=glob" yaml:"type"`
+	Type string `validate:"oneof=glob prefix" yaml:"type"`
 }
