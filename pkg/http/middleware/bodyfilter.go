@@ -37,10 +37,14 @@ func BodyFilter(next http.Handler, conf []config.BodyFilterConfig) kaspHttp.Midd
 
 		c, match := MatchConfig(r, conf)
 		if !match {
+			slog.Debug("body filter did not match any request", "config paths", c.Paths, "path", r.URL.Path)
+
 			next.ServeHTTP(w, r)
 
 			return
 		}
+
+		slog.Debug("body filter matched request", "config paths", c.Paths, "path", r.URL.Path)
 
 		if r.Body == nil {
 			slog.Warn("empty request body")
@@ -90,6 +94,11 @@ func MatchConfig(r *http.Request, conf []config.BodyFilterConfig) (config.BodyFi
 			switch p.Type {
 			case "glob":
 				if m, err := filepath.Match(p.Path, r.URL.Path); m && err == nil {
+					return c, true
+				}
+
+			case "prefix":
+				if strings.HasPrefix(r.URL.Path, p.Path) {
 					return c, true
 				}
 
