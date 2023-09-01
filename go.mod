@@ -3,7 +3,7 @@ module github.com/omissis/kube-apiserver-proxy
 go 1.20
 
 require (
-	github.com/go-playground/validator/v10 v10.15.1
+	github.com/go-playground/validator/v10 v10.15.3
 	github.com/google/go-cmp v0.5.9
 	github.com/itchyny/gojq v0.12.13
 	github.com/spf13/cobra v1.7.0
