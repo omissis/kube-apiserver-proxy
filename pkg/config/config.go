@@ -14,12 +14,12 @@ type MiddlewareConfig[T any] struct {
 }
 
 type BodyFilterConfig struct {
-	Paths   []BodyFilterConfigPaths `validate:"required,gt=0,dive,gt=0"           yaml:"paths"`
+	Paths   []BodyFilterConfigPaths `validate:"required,gt=0,dive"                yaml:"paths"`
 	Methods []string                `validate:"required,gt=0,dive,gt=0,uppercase" yaml:"methods"`
 	Filter  string                  `validate:"required"                          yaml:"filter"`
 }
 
 type BodyFilterConfigPaths struct {
-	Path string `yaml:"path"`
+	Path string `validate:"required"          yaml:"path"`
 	Type string `validate:"oneof=glob prefix" yaml:"type"`
 }
