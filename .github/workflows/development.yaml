@@ -39,7 +39,7 @@ jobs:
       # - name: Run e2e tests
       #   run: scripts/test-e2e.sh
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
       - name: Build binaries
         uses: goreleaser/goreleaser-action@v4
         with:
