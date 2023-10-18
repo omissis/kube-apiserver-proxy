@@ -5,7 +5,7 @@ goreleaser 1.19.2
 helm 3.13.1
 jq 1.6
 kind 0.20.0
-kubectl 1.28.2
+kubectl 1.28.3
 make 4.4.1
 mkcert 1.4.4
 nodejs 20.8.1
