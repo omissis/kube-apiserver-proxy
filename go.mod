@@ -1,6 +1,8 @@
 module github.com/omissis/kube-apiserver-proxy
 
-go 1.20
+go 1.23.0
+
+toolchain go1.24.5
 
 require (
 	github.com/go-playground/validator/v10 v10.16.0
@@ -11,7 +13,7 @@ require (
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/mock v0.3.0
-	golang.org/x/exp v0.0.0-20231206192017-f3f8817b8deb
+	golang.org/x/exp v0.0.0-20250718183923-645b1fa84792
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.28.4
 	k8s.io/apimachinery v0.28.4
